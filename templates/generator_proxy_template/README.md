@@ -1,6 +1,6 @@
-# Astroport Generator Proxy Rewards Template
+# Paloma Generator Proxy Rewards Template
 
-This generator proxy contract allows an external staking contract to be connected to the Generator. It gives Generator stakers the ability to claim both ASTRO emissions as well as 3rd party tokens at the same time. This is referred to as "dual rewards" in Astroport.
+This generator proxy contract allows an external staking contract to be connected to the Generator. It gives Generator stakers the ability to claim both ASTRO emissions as well as 3rd party tokens at the same time. This is referred to as "dual rewards" in Paloma.
 
 ## Be sure that all the template's TODOs get properly changed!
 
@@ -12,11 +12,11 @@ Initializes the proxy contract with required addresses (generator, LP token to s
 
 ```json
 {
-  "generator_contract_addr": "terra...",
-  "pair_addr": "terra...",
-  "lp_token_addr": "terra...",
-  "reward_contract_addr": "terra...",
-  "reward_token_addr": "terra..."
+  "generator_contract_addr": "paloma...",
+  "pair_addr": "paloma...",
+  "lp_token_addr": "paloma...",
+  "reward_contract_addr": "paloma...",
+  "reward_token_addr": "paloma..."
 }
 ```
 
@@ -29,7 +29,7 @@ CW20 receive msg.
 ```json
 {
   "receive": {
-    "sender": "terra...",
+    "sender": "paloma...",
     "amount": "123",
     "msg": "<base64_encoded_json_string>"
   }
@@ -53,7 +53,7 @@ Sends accrued token rewards to a specific account.
 ```json
 {
   "send_rewards": {
-    "account": "terra...",
+    "account": "paloma...",
     "amount": "123"
   }
 }
@@ -66,7 +66,7 @@ Withdraws LP tokens alongside any outstanding token rewards and sends them to th
 ```json
 {
   "withdraw": {
-    "account": "terra...",
+    "account": "paloma...",
     "amount": "123"
   }
 }
@@ -79,7 +79,7 @@ Unstake LP tokens without caring about accrued rewards.
 ```json
 {
   "emergency_withdraw": {
-    "account": "terra...",
+    "account": "paloma...",
     "amount": "123"
   }
 }
@@ -95,7 +95,7 @@ One example is for transferring LP tokens after a withdrawal from the 3rd party 
 {
   "callback": {
     "transfer_lp_tokens_after_withdraw": {
-      "account": "terra...",
+      "account": "paloma...",
       "prev_lp_balance": "1234"
     }
   }

@@ -1,4 +1,4 @@
-# Astroport Generator
+# Paloma Generator
 
 The Generator contract allocates token rewards (ASTRO) for various LP tokens and distributes them pro-rata to LP stakers. The Generator supports proxy staking via 3rd party contracts that offer a second reward besides ASTRO token emissions.
 
@@ -10,11 +10,11 @@ Initializes the contract with required addresses and contracts used for reward d
 
 ```json
 {
-  "owner": "terra...",
-  "astro_token": "terra...",
+  "owner": "paloma...",
+  "astro_token": "paloma...",
   "tokens_per_block": "123",
   "start_block": "123",
-  "vesting_contract": "terra..."
+  "vesting_contract": "paloma..."
 }
 ```
 
@@ -28,10 +28,10 @@ Only the contract owner can execute this.
 ```json
 {
   "update_config": {
-    "vesting_contract": "terra...",
-    "generator_controller": "terra...",
-    "guardian": "terra...",
-    "voting_escrow": "terra...",
+    "vesting_contract": "paloma...",
+    "generator_controller": "paloma...",
+    "guardian": "paloma...",
+    "voting_escrow": "paloma...",
     "generator_limit": 20
   }
 }
@@ -46,11 +46,11 @@ Set up a new list of pools with allocation points.
   "setup_pools": {
     "pools" : [
       [
-        "terra...",
+        "paloma...",
         "60"
       ],
       [
-        "terra...",
+        "paloma...",
         "40"
       ]
     ]
@@ -65,7 +65,7 @@ Update has_asset_rewards parameter for the given pool.
 ```json
 {
   "update_pool": {
-    "lp_token": "terra...",
+    "lp_token": "paloma...",
     "has_asset_rewards": true
   }
 }
@@ -78,7 +78,7 @@ Update rewards and return it to user.
 ```json
 {
   "claim_rewards": {
-      "lp_token": "terra..."
+      "lp_token": "paloma..."
   }
 }
 ```
@@ -90,7 +90,7 @@ CW20 receive msg.
 ```json
 {
   "receive": {
-    "sender": "terra...",
+    "sender": "paloma...",
     "amount": "123",
     "msg": "<base64_encoded_json_string>"
   }
@@ -139,7 +139,7 @@ In `send.msg`, you may encode this JSON string into base64 encoding:
 
 ```json
 {
-  "deposit_for": "terra..."
+  "deposit_for": "paloma..."
 }
 ```
 
@@ -150,7 +150,7 @@ Unstakes LP tokens from the Generator contract and claims outstanding token emis
 ```json
 {
   "withdraw": {
-    "lp_token": "terra...",
+    "lp_token": "paloma...",
     "amount": "123"
   }
 }
@@ -163,7 +163,7 @@ Unstakes LP tokens without caring about rewards. To be used only in emergencies 
 ```json
 {
   "emergency_withdraw": {
-    "lp_token": "terra..."
+    "lp_token": "paloma..."
   }
 }
 ```
@@ -175,8 +175,8 @@ Sends orphaned rewards (left behind by emergency withdraws) to another address. 
 ```json
 {
   "send_orphan_reward": {
-    "recipient": "terra...",
-    "lp_token": "terra..."
+    "recipient": "paloma...",
+    "lp_token": "paloma..."
   }
 }
 ```
@@ -200,7 +200,7 @@ Creates a request to change contract ownership. The validity period of the offer
 ```json
 {
   "propose_new_owner": {
-    "owner": "terra...",
+    "owner": "paloma...",
     "expires_in": 1234567
   }
 }
@@ -233,8 +233,8 @@ Change the current dual rewards proxy for a specific LP token. Only the contract
 ```json
 {
   "move_to_proxy": {
-    "lp_token": "terra...",
-    "proxy": "terra..."
+    "lp_token": "paloma...",
+    "proxy": "paloma..."
   }
 }
 ```
@@ -247,8 +247,8 @@ Only the owner contract or generator guardian can execute this.
 ```json
 {
   "update_tokens_blockedlist": {
-    "add": ["terra...", "terra..."],
-    "remove": ["terra...", "terra...", "terra..."]
+    "add": ["paloma...", "paloma..."],
+    "remove": ["paloma...", "paloma...", "paloma..."]
   }
 }
 ```
@@ -260,7 +260,7 @@ Sets the allocation point to zero for specified pool. Only the factory contract 
 ```json
 {
   "deactivate_pool": {
-    "lp_token": "terra..."
+    "lp_token": "paloma..."
   }
 }
 ```
@@ -284,8 +284,8 @@ Updates emissions boost for specified generators
 ```json
 {
   "checkpoint_user_boost": {
-    "generators": ["terra...", "terra..."],
-    "user": "terra..."
+    "generators": ["paloma...", "paloma..."],
+    "user": "paloma..."
   }
 }
 ```
@@ -311,8 +311,8 @@ Returns the amount of a specific LP token that a user currently has staked in th
 ```json
 {
   "deposit": {
-    "lp_token": "terra...",
-    "user": "terra..."
+    "lp_token": "paloma...",
+    "user": "paloma..."
   }
 }
 ```
@@ -324,8 +324,8 @@ Returns the amount of pending ASTRO and 3rd party token rewards that can be clai
 ```json
 {
   "pending_token": {
-    "lp_token": "terra...",
-    "user": "terra..."
+    "lp_token": "paloma...",
+    "user": "paloma..."
   }
 }
 ```
@@ -347,7 +347,7 @@ Returns the amount of orphaned proxy rewards left behind by emergency withdrawal
 ```json
 {
   "orphan_proxy_rewards": {
-    "lp_token": "terra..."
+    "lp_token": "paloma..."
   }
 }
 ```
@@ -359,7 +359,7 @@ Returns information about token emissions for the specified LP token.
 ```json
 {
   "reward_info": {
-    "lp_token": "terra..."
+    "lp_token": "paloma..."
   }
 }
 ```
@@ -371,7 +371,7 @@ Returns pool information for the specified LP token.
 ```json
 {
   "pool_info": {
-    "lp_token": "terra..."
+    "lp_token": "paloma..."
   }
 }
 ```
@@ -383,7 +383,7 @@ Returns the amount of ASTRO that will be distributed up to a future block and fo
 ```json
 {
   "simulate_future_reward": {
-    "lp_token": "terra...",
+    "lp_token": "paloma...",
     "future_block": 999
   }
 }
@@ -396,8 +396,8 @@ Returns a list of stakers that currently have funds in a specific generator.
 ```json
 {
   "list_of_stakers": {
-    "lp_token": "terra...",
-    "start_after": "terra...",
+    "lp_token": "paloma...",
+    "start_after": "paloma...",
     "limit": 5
   }
 }
@@ -430,8 +430,8 @@ Returns the current virtual amount in a specific generator
 ```json
 {
   "user_virtual_amount": {
-    "lp_token": "terra...",
-    "user": "terra..."
+    "lp_token": "paloma...",
+    "user": "paloma..."
   }
 }
 ```
@@ -443,7 +443,7 @@ Returns the total virtual supply of generator
 ```json
 {
   "total_virtual_amount": {
-    "lp_token": "terra..."
+    "lp_token": "paloma..."
   }
 }
 ```

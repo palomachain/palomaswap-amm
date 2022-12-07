@@ -1,10 +1,10 @@
 use crate::state::CONFIG;
-use astroport::asset::{addr_validate_to_lower, AssetInfo};
+use paloma::asset::{addr_validate_to_lower, AssetInfo};
 
-use astroport::generator::{Config, MigrateMsg};
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, DepsMut, StdResult, Uint128, Uint64};
 use cw_storage_plus::Item;
+use paloma::generator::{Config, MigrateMsg};
 
 /// This structure stores the core parameters for the Generator contract.
 #[cw_serde]

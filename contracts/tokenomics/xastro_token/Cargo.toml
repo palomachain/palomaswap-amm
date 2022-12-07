@@ -1,7 +1,7 @@
 [package]
-name = "astroport-xastro-token"
+name = "paloma-xastro-token"
 version = "1.0.0"
-authors = ["Astroport"]
+authors = ["Paloma"]
 edition = "2021"
 description = "Expanded implementation of a CosmWasm-20 compliant token for post intialization and saving history"
 license = "MIT"
@@ -18,7 +18,7 @@ backtraces = ["cosmwasm-std/backtraces"]
 library = []
 
 [dependencies]
-astroport = { path = "../../../packages/astroport", default-features = false }
+paloma = { path = "../../../packages/paloma", default-features = false }
 cw2 = "0.15"
 cw20 = "0.15"
 cw20-base = { version = "0.15", features = ["library"] }

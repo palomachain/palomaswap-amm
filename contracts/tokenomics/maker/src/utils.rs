@@ -1,11 +1,11 @@
 use crate::error::ContractError;
 use crate::state::{Config, BRIDGES};
-use astroport::asset::{Asset, AssetInfo, PairInfo};
-use astroport::maker::ExecuteMsg;
-use astroport::pair::{Cw20HookMsg, SimulationResponse};
 use cosmwasm_std::{
     to_binary, Addr, Decimal, Deps, Env, QuerierWrapper, StdResult, SubMsg, Uint128, WasmMsg,
 };
+use paloma::asset::{Asset, AssetInfo, PairInfo};
+use paloma::maker::ExecuteMsg;
+use paloma::pair::{Cw20HookMsg, SimulationResponse};
 
 /// The default bridge depth for a fee token
 pub const BRIDGES_INITIAL_DEPTH: u64 = 0;
@@ -66,7 +66,7 @@ pub fn build_swap_msg(
 
         Ok(SubMsg::new(WasmMsg::Execute {
             contract_addr: pool.contract_addr.to_string(),
-            msg: to_binary(&astroport::pair::ExecuteMsg::Swap {
+            msg: to_binary(&paloma::pair::ExecuteMsg::Swap {
                 offer_asset,
                 ask_asset_info: to.cloned(),
                 belief_price: None,
@@ -203,7 +203,7 @@ pub fn get_pool(
     amount: Option<Uint128>,
 ) -> Result<(PairInfo, Option<Uint128>), ContractError> {
     // We use raw query to save gas
-    let result = astroport::factory::ROUTE.query(
+    let result = paloma::factory::ROUTE.query(
         querier,
         factory_contract.clone(),
         (from.to_string(), to.to_string()),
@@ -215,7 +215,7 @@ pub fn get_pool(
                 .map(|pair_contract| {
                     let sim_res: SimulationResponse = querier.query_wasm_smart(
                         &pair_contract,
-                        &astroport::pair::QueryMsg::Simulation {
+                        &paloma::pair::QueryMsg::Simulation {
                             offer_asset: Asset {
                                 info: from.clone(),
                                 amount: amount.unwrap_or(SWAP_SIMULATION_AMOUNT),
@@ -233,7 +233,7 @@ pub fn get_pool(
                 .unwrap();
 
             Ok((
-                querier.query_wasm_smart(&best_pair, &astroport::pair::QueryMsg::Pair {})?,
+                querier.query_wasm_smart(&best_pair, &paloma::pair::QueryMsg::Pair {})?,
                 Some(sim_res.return_amount),
             ))
         }

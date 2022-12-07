@@ -8,13 +8,8 @@ use crate::mock_querier::mock_dependencies;
 
 use crate::response::MsgInstantiateContractResponse;
 use crate::state::{store_precisions, Config, CONFIG};
-use astroport::asset::{native_asset, native_asset_info, Asset, AssetInfo, PairInfo};
+use paloma::asset::{native_asset, native_asset_info, Asset, AssetInfo, PairInfo};
 
-use astroport::pair::{
-    Cw20HookMsg, ExecuteMsg, InstantiateMsg, PoolResponse, SimulationResponse, StablePoolParams,
-    TWAP_PRECISION,
-};
-use astroport::token::InstantiateMsg as TokenInstantiateMsg;
 use cosmwasm_std::testing::{mock_env, mock_info, MOCK_CONTRACT_ADDR};
 use cosmwasm_std::{
     attr, coin, to_binary, Addr, BankMsg, BlockInfo, Coin, CosmosMsg, Decimal, DepsMut, Env, Reply,
@@ -22,6 +17,11 @@ use cosmwasm_std::{
 };
 use cw20::{Cw20ExecuteMsg, Cw20ReceiveMsg, MinterResponse};
 use itertools::Itertools;
+use paloma::pair::{
+    Cw20HookMsg, ExecuteMsg, InstantiateMsg, PoolResponse, SimulationResponse, StablePoolParams,
+    TWAP_PRECISION,
+};
+use paloma::token::InstantiateMsg as TokenInstantiateMsg;
 use protobuf::Message;
 
 fn store_liquidity_token(deps: DepsMut, msg_id: u64, contract_addr: String) {
@@ -98,7 +98,7 @@ fn proper_initialization() {
                 .unwrap(),
                 funds: vec![],
                 admin: None,
-                label: String::from("Astroport LP token"),
+                label: String::from("Paloma LP token"),
             }
             .into(),
             id: 1,
@@ -1213,7 +1213,7 @@ fn test_accumulate_prices() {
     for test_case in test_cases {
         let (case, result) = test_case;
         let asset_x = native_asset_info("uusd".to_string());
-        let asset_y = native_asset_info("uluna".to_string());
+        let asset_y = native_asset_info("ugrain".to_string());
         let mut deps = mock_dependencies(&[]);
         store_precisions(deps.as_mut(), &[asset_x.clone(), asset_y.clone()]).unwrap();
 
@@ -1276,8 +1276,8 @@ fn mock_env_with_block_time(time: u64) -> Env {
 }
 
 use crate::utils::{accumulate_prices, compute_swap, select_pools};
-use astroport::factory::PairType;
-use astroport::querier::NATIVE_TOKEN_PRECISION;
+use paloma::factory::PairType;
+use paloma::querier::NATIVE_TOKEN_PRECISION;
 use proptest::prelude::*;
 use sim::StableSwapModel;
 
@@ -1292,7 +1292,7 @@ proptest! {
         prop_assume!(amount_in < balance_in && balance_out > balance_in);
 
         let offer_asset = native_asset("uusd".to_string(), Uint128::from(amount_in));
-        let ask_asset = native_asset_info("uluna".to_string());
+        let ask_asset = native_asset_info("ugrain".to_string());
 
         let msg = InstantiateMsg {
             factory_addr: String::from("factory"),
@@ -1303,7 +1303,7 @@ proptest! {
 
         let env = mock_env();
         let info = mock_info("owner", &[]);
-        let mut deps = mock_dependencies(&[coin(balance_in, "uusd"), coin(balance_out, "uluna")]);
+        let mut deps = mock_dependencies(&[coin(balance_in, "uusd"), coin(balance_out, "ugrain")]);
 
         instantiate(deps.as_mut(), env.clone(), info, msg).unwrap();
         let config = CONFIG.load(deps.as_ref().storage).unwrap();
@@ -1345,7 +1345,7 @@ proptest! {
         let reverse_result = query_reverse_simulation(
             deps.as_ref(),
             env.clone(),
-            native_asset("uluna".to_string(), result.return_amount),
+            native_asset("ugrain".to_string(), result.return_amount),
             None,
         )
         .unwrap();

@@ -5,23 +5,23 @@ use cosmwasm_std::{
 
 use crate::error::ContractError;
 use crate::state::{Config, CONFIG};
-use astroport::staking::{ConfigResponse, Cw20HookMsg, ExecuteMsg, InstantiateMsg, QueryMsg};
 use cw2::set_contract_version;
 use cw20::{Cw20ExecuteMsg, Cw20ReceiveMsg, MinterResponse};
+use paloma::staking::{ConfigResponse, Cw20HookMsg, ExecuteMsg, InstantiateMsg, QueryMsg};
 
 use crate::response::MsgInstantiateContractResponse;
-use astroport::asset::addr_validate_to_lower;
-use astroport::querier::{query_supply, query_token_balance};
-use astroport::token::InstantiateMsg as TokenInstantiateMsg;
+use paloma::asset::addr_validate_to_lower;
+use paloma::querier::{query_supply, query_token_balance};
+use paloma::token::InstantiateMsg as TokenInstantiateMsg;
 use protobuf::Message;
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "astroport-staking";
+const CONTRACT_NAME: &str = "paloma-staking";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// xASTRO information.
-const TOKEN_NAME: &str = "Staked Astroport";
+const TOKEN_NAME: &str = "Staked Paloma";
 const TOKEN_SYMBOL: &str = "xASTRO";
 
 /// A `reply` call code ID used for sub-messages.
@@ -63,7 +63,7 @@ pub fn instantiate(
                 marketing: None,
             })?,
             funds: vec![],
-            label: String::from("Staked Astroport Token"),
+            label: String::from("Staked Paloma Token"),
         }
         .into(),
         id: INSTANTIATE_TOKEN_REPLY_ID,

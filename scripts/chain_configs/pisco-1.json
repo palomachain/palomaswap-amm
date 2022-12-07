@@ -5,7 +5,7 @@
   "token": {
     "admin": null,
     "initMsg": {
-      "name": "Astroport",
+      "name": "Paloma",
       "symbol": "ASTRO",
       "decimals": 6,
       "initial_balances": [
@@ -15,15 +15,15 @@
         }
       ],
       "marketing": {
-        "project": "Astroport",
-        "description": "Astroport is a neutral marketplace where anyone, from anywhere in the galaxy, can dock to trade their wares.",
+        "project": "Paloma",
+        "description": "Paloma is a neutral marketplace where anyone, from anywhere in the galaxy, can dock to trade their wares.",
         "marketing": null,
         "logo": {
-          "url": "https://astroport.fi/astro_logo.svg"
+          "url": "https://paloma.fi/astro_logo.svg"
         }
       }
     },
-    "label": "Astroport ASTRO"
+    "label": "Paloma ASTRO"
   },
   "treasury": {
     "admin": null,
@@ -33,7 +33,7 @@
       ],
       "mutable": true
     },
-    "label": "Astroport Treasury"
+    "label": "Paloma Treasury"
   },
   "staking": {
     "admin": null,
@@ -42,15 +42,15 @@
       "token_code_id": null,
       "deposit_token_addr": null,
       "marketing": {
-        "project": "Astroport",
-        "description": "Astroport is a neutral marketplace where anyone, from anywhere in the galaxy, can dock to trade their wares.",
+        "project": "Paloma",
+        "description": "Paloma is a neutral marketplace where anyone, from anywhere in the galaxy, can dock to trade their wares.",
         "marketing": null,
         "logo": {
-          "url": "https://app.astroport.fi/tokens/xAstro.svg"
+          "url": "https://app.paloma.fi/tokens/xAstro.svg"
         }
       }
     },
-    "label": "Astroport Staking"
+    "label": "Paloma Staking"
   },
   "factory": {
     "admin": null,
@@ -83,7 +83,7 @@
       "generator_address": null,
       "whitelist_code_id": null
     },
-    "label": "Astroport Factory",
+    "label": "Paloma Factory",
     "change_owner": false,
     "proposeNewOwner": {
       "owner": null,
@@ -93,9 +93,9 @@
   "router": {
     "admin": null,
     "initMsg": {
-      "astroport_factory": null
+      "paloma_factory": null
     },
-    "label": "Astroport Router"
+    "label": "Paloma Router"
   },
   "maker": {
     "admin": null,
@@ -108,7 +108,7 @@
       "governance_percent": null,
       "max_spread": "0.5"
     },
-    "label": "Astroport Maker"
+    "label": "Paloma Maker"
   },
   "vesting": {
     "admin": null,
@@ -116,7 +116,7 @@
       "owner": null,
       "token_addr": null
     },
-    "label": "Astroport Vesting",
+    "label": "Paloma Vesting",
     "registration": {
       "msg": {
         "register_vesting_accounts": {
@@ -153,7 +153,7 @@
       "factory": null,
       "whitelist_code_id": null
     },
-    "label": "Astroport Generator",
+    "label": "Paloma Generator",
     "change_owner": false,
     "proposeNewOwner": {
       "owner": null,
@@ -169,7 +169,7 @@
       "reward_contract_addr": null,
       "reward_token_addr": null
     },
-    "label": "Astroport Generator Proxy"
+    "label": "Paloma Generator Proxy"
   },
   "oracle": {
     "admin": null,
@@ -177,7 +177,7 @@
       "factory_contract": null,
       "asset_infos": null
     },
-    "label": "Astroport Oracle"
+    "label": "Paloma Oracle"
   },
   "create_pairs": {
     "pairs": []

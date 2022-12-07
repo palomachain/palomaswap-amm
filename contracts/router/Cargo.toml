@@ -1,9 +1,9 @@
 [package]
-name = "astroport-router"
+name = "paloma-router"
 version = "1.1.0"
-authors = ["Astroport"]
+authors = ["Paloma"]
 edition = "2021"
-description = "The Astroport router contract - provides multi-hop swap functionality for Astroport pools"
+description = "The Paloma router contract - provides multi-hop swap functionality for Paloma pools"
 license = "Apache-2.0"
 
 exclude = [
@@ -28,14 +28,14 @@ cw20 = "0.15"
 cosmwasm-std = { version = "1.1" }
 cw-storage-plus = "0.15"
 integer-sqrt = "0.1.5"
-astroport = { path = "../../packages/astroport", default-features = false }
+paloma = { path = "../../packages/paloma", default-features = false }
 thiserror = { version = "1.0" }
 cosmwasm-schema = "1.1"
 
 [dev-dependencies]
-astroport-factory = { path = "../factory" }
-astroport-token = { path = "../token" }
-astroport-pair = { path = "../pair" }
+paloma-factory = { path = "../factory" }
+paloma-token = { path = "../token" }
+paloma-pair = { path = "../pair" }
 anyhow = "1.0"
 cw-multi-test = "0.15"
 

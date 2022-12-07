@@ -1,18 +1,18 @@
 use crate::error::ContractError;
 use crate::state::CONFIG;
-use astroport::asset::{addr_opt_validate, addr_validate_to_lower, Asset, AssetInfo, PairInfo};
-use astroport::factory::PairType;
-use astroport::pair::{
-    migration_check, ConfigResponse, CumulativePricesResponse, Cw20HookMsg, InstantiateMsg,
-    PoolResponse, ReverseSimulationResponse, SimulationResponse,
-};
-use astroport::pair_bonded::{Config, ExecuteMsg, QueryMsg};
 use cosmwasm_std::{
     from_binary, to_binary, Addr, Binary, Decimal, Deps, DepsMut, Env, MessageInfo, Response,
     StdResult, Uint128,
 };
 use cw2::set_contract_version;
 use cw20::Cw20ReceiveMsg;
+use paloma::asset::{addr_opt_validate, addr_validate_to_lower, Asset, AssetInfo, PairInfo};
+use paloma::factory::PairType;
+use paloma::pair::{
+    migration_check, ConfigResponse, CumulativePricesResponse, Cw20HookMsg, InstantiateMsg,
+    PoolResponse, ReverseSimulationResponse, SimulationResponse,
+};
+use paloma::pair_bonded::{Config, ExecuteMsg, QueryMsg};
 
 pub trait PairBonded<'a> {
     /// Contract name that is used for migration.

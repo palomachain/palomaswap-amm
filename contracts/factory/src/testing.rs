@@ -3,22 +3,20 @@ use cosmwasm_std::{
     WasmMsg,
 };
 
+use crate::contract::{execute, instantiate, query};
+use crate::error::ContractError;
 use crate::mock_querier::mock_dependencies;
 use crate::state::CONFIG;
-use crate::{
-    contract::{execute, instantiate, query},
-    error::ContractError,
-};
 
-use astroport::asset::{AssetInfo, PairInfo};
-use astroport::factory::{
+use paloma::asset::{AssetInfo, PairInfo};
+use paloma::factory::{
     ConfigResponse, ExecuteMsg, InstantiateMsg, PairConfig, PairType, PairsResponse, QueryMsg,
 };
 
 use crate::contract::reply;
 use crate::response::MsgInstantiateContractResponse;
-use astroport::pair::InstantiateMsg as PairInstantiateMsg;
 use cosmwasm_std::testing::{mock_env, mock_info, MOCK_CONTRACT_ADDR};
+use paloma::pair::InstantiateMsg as PairInstantiateMsg;
 use protobuf::Message;
 
 #[test]
@@ -472,7 +470,7 @@ fn create_pair() {
                 code_id: pair_config.code_id,
                 funds: vec![],
                 admin: Some(config.unwrap().owner.to_string()),
-                label: String::from("Astroport pair"),
+                label: String::from("Paloma pair"),
             }
             .into(),
             id: 1,
@@ -536,8 +534,8 @@ fn register() {
 
     let mut deployed_pairs = vec![(&pair0_addr, &pair0_info)];
 
-    // Register an Astroport pair querier
-    deps.querier.with_astroport_pairs(&deployed_pairs);
+    // Register an Paloma pair querier
+    deps.querier.with_paloma_pairs(&deployed_pairs);
 
     let data = MsgInstantiateContractResponse {
         contract_address: String::from("pair0000"),
@@ -612,8 +610,8 @@ fn register() {
 
     deployed_pairs.push((&pair1_addr, &pair1_info));
 
-    // Register astroport pair querier
-    deps.querier.with_astroport_pairs(&deployed_pairs);
+    // Register paloma pair querier
+    deps.querier.with_paloma_pairs(&deployed_pairs);
 
     let data = MsgInstantiateContractResponse {
         contract_address: String::from("pair0001"),

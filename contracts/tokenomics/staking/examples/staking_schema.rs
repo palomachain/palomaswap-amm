@@ -1,6 +1,6 @@
 use cosmwasm_schema::write_api;
 
-use astroport::staking::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
+use paloma::staking::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
 
 fn main() {
     write_api! {

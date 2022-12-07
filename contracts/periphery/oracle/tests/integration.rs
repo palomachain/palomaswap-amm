@@ -6,14 +6,14 @@ use cw20::{BalanceResponse, Cw20QueryMsg, MinterResponse};
 use cw_multi_test::{App, AppResponse, ContractWrapper, Executor};
 use itertools::Itertools;
 
-use astroport::asset::{Asset, AssetInfo, PairInfo};
-use astroport::token::InstantiateMsg as TokenInstantiateMsg;
+use paloma::asset::{Asset, AssetInfo, PairInfo};
+use paloma::token::InstantiateMsg as TokenInstantiateMsg;
 
-use astroport::factory::{PairConfig, PairType};
+use paloma::factory::{PairConfig, PairType};
 
-use astroport::oracle::QueryMsg::Consult;
-use astroport::oracle::{ExecuteMsg, InstantiateMsg};
-use astroport::pair::StablePoolParams;
+use paloma::oracle::QueryMsg::Consult;
+use paloma::oracle::{ExecuteMsg, InstantiateMsg};
+use paloma::pair::StablePoolParams;
 
 fn mock_app(owner: Option<Addr>, coins: Option<Vec<Coin>>) -> App {
     if owner.is_some() && coins.is_some() {
@@ -31,9 +31,9 @@ fn mock_app(owner: Option<Addr>, coins: Option<Vec<Coin>>) -> App {
 
 fn instantiate_contracts(router: &mut App, owner: Addr) -> (Addr, Addr, u64) {
     let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
-        astroport_token::contract::execute,
-        astroport_token::contract::instantiate,
-        astroport_token::contract::query,
+        paloma_token::contract::execute,
+        paloma_token::contract::instantiate,
+        paloma_token::contract::query,
     ));
 
     let astro_token_code_id = router.store_code(astro_token_contract);
@@ -63,37 +63,37 @@ fn instantiate_contracts(router: &mut App, owner: Addr) -> (Addr, Addr, u64) {
 
     let pair_contract = Box::new(
         ContractWrapper::new_with_empty(
-            astroport_pair::contract::execute,
-            astroport_pair::contract::instantiate,
-            astroport_pair::contract::query,
+            paloma_pair::contract::execute,
+            paloma_pair::contract::instantiate,
+            paloma_pair::contract::query,
         )
-        .with_reply_empty(astroport_pair::contract::reply),
+        .with_reply_empty(paloma_pair::contract::reply),
     );
 
     let pair_code_id = router.store_code(pair_contract);
 
     let pair_stable_contract = Box::new(
         ContractWrapper::new_with_empty(
-            astroport_pair_stable::contract::execute,
-            astroport_pair_stable::contract::instantiate,
-            astroport_pair_stable::contract::query,
+            paloma_pair_stable::contract::execute,
+            paloma_pair_stable::contract::instantiate,
+            paloma_pair_stable::contract::query,
         )
-        .with_reply_empty(astroport_pair_stable::contract::reply),
+        .with_reply_empty(paloma_pair_stable::contract::reply),
     );
 
     let pair_stable_code_id = router.store_code(pair_stable_contract);
 
     let factory_contract = Box::new(
         ContractWrapper::new_with_empty(
-            astroport_factory::contract::execute,
-            astroport_factory::contract::instantiate,
-            astroport_factory::contract::query,
+            paloma_factory::contract::execute,
+            paloma_factory::contract::instantiate,
+            paloma_factory::contract::query,
         )
-        .with_reply_empty(astroport_factory::contract::reply),
+        .with_reply_empty(paloma_factory::contract::reply),
     );
 
     let factory_code_id = router.store_code(factory_contract);
-    let msg = astroport::factory::InstantiateMsg {
+    let msg = paloma::factory::InstantiateMsg {
         pair_configs: vec![
             PairConfig {
                 code_id: pair_code_id,
@@ -131,9 +131,9 @@ fn instantiate_contracts(router: &mut App, owner: Addr) -> (Addr, Addr, u64) {
         .unwrap();
 
     let oracle_contract = Box::new(ContractWrapper::new_with_empty(
-        astroport_oracle::contract::execute,
-        astroport_oracle::contract::instantiate,
-        astroport_oracle::contract::query,
+        paloma_oracle::contract::execute,
+        paloma_oracle::contract::instantiate,
+        paloma_oracle::contract::query,
     ));
     let oracle_code_id = router.store_code(oracle_contract);
     (astro_token_instance, factory_instance, oracle_code_id)
@@ -141,9 +141,9 @@ fn instantiate_contracts(router: &mut App, owner: Addr) -> (Addr, Addr, u64) {
 
 fn instantiate_token(router: &mut App, owner: Addr, name: String, symbol: String) -> Addr {
     let token_contract = Box::new(ContractWrapper::new_with_empty(
-        astroport_token::contract::execute,
-        astroport_token::contract::instantiate,
-        astroport_token::contract::query,
+        paloma_token::contract::execute,
+        paloma_token::contract::instantiate,
+        paloma_token::contract::query,
     ));
 
     let token_code_id = router.store_code(token_contract);
@@ -268,7 +268,7 @@ fn provide_liquidity(
     router.execute_contract(
         user.clone(),
         pair_info.contract_addr.clone(),
-        &astroport::pair::ExecuteMsg::ProvideLiquidity {
+        &paloma::pair::ExecuteMsg::ProvideLiquidity {
             assets,
             slippage_tolerance: None,
             auto_stake: None,
@@ -308,7 +308,7 @@ fn create_pair(
         .execute_contract(
             owner.clone(),
             factory_instance.clone(),
-            &astroport::factory::ExecuteMsg::CreatePair {
+            &paloma::factory::ExecuteMsg::CreatePair {
                 pair_type: PairType::Xyk {},
                 asset_infos: asset_infos.clone(),
                 init_params: None,
@@ -335,7 +335,7 @@ fn create_pair(
         .wrap()
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr: factory_instance.clone().to_string(),
-            msg: to_binary(&astroport::factory::QueryMsg::Pair {
+            msg: to_binary(&paloma::factory::QueryMsg::Pair {
                 asset_infos: asset_infos.clone(),
             })
             .unwrap(),
@@ -375,7 +375,7 @@ fn create_pair_stable(
         .execute_contract(
             owner.clone(),
             factory_instance.clone(),
-            &astroport::factory::ExecuteMsg::CreatePair {
+            &paloma::factory::ExecuteMsg::CreatePair {
                 pair_type: PairType::Stable {},
                 asset_infos: asset_infos.clone(),
                 init_params: Some(
@@ -401,7 +401,7 @@ fn create_pair_stable(
         .wrap()
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr: factory_instance.clone().to_string(),
-            msg: to_binary(&astroport::factory::QueryMsg::Pair {
+            msg: to_binary(&paloma::factory::QueryMsg::Pair {
                 asset_infos: asset_infos.clone(),
             })
             .unwrap(),
@@ -444,7 +444,7 @@ fn create_pair_stable(
         .execute_contract(
             user.clone(),
             pair_info.contract_addr.clone(),
-            &astroport::pair::ExecuteMsg::ProvideLiquidity {
+            &paloma::pair::ExecuteMsg::ProvideLiquidity {
                 assets,
                 slippage_tolerance: None,
                 auto_stake: None,
@@ -497,7 +497,7 @@ fn change_provide_liquidity(
         .execute_contract(
             user,
             pair_contract,
-            &astroport::pair::ExecuteMsg::ProvideLiquidity {
+            &paloma::pair::ExecuteMsg::ProvideLiquidity {
                 assets,
                 slippage_tolerance: Some(Decimal::percent(50)),
                 auto_stake: None,
@@ -569,7 +569,7 @@ fn consult() {
         .wrap()
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr: factory_instance.clone().to_string(),
-            msg: to_binary(&astroport::factory::QueryMsg::Pair {
+            msg: to_binary(&paloma::factory::QueryMsg::Pair {
                 asset_infos: asset_infos.clone(),
             })
             .unwrap(),
@@ -700,7 +700,7 @@ fn consult_pair_stable() {
         .wrap()
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr: factory_instance.clone().to_string(),
-            msg: to_binary(&astroport::factory::QueryMsg::Pair {
+            msg: to_binary(&paloma::factory::QueryMsg::Pair {
                 asset_infos: asset_infos.clone(),
             })
             .unwrap(),
@@ -1071,7 +1071,7 @@ fn consult_zero_price() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "uluna".to_string(),
+                denom: "ugrain".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ]),
@@ -1216,7 +1216,7 @@ fn consult_zero_price() {
             denom: "cny".to_string(),
         },
         AssetInfo::NativeToken {
-            denom: "uluna".to_string(),
+            denom: "ugrain".to_string(),
         },
     ];
 
@@ -1341,7 +1341,7 @@ fn consult_multiple_assets() {
         .wrap()
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr: factory_instance.clone().to_string(),
-            msg: to_binary(&astroport::factory::QueryMsg::Pair {
+            msg: to_binary(&paloma::factory::QueryMsg::Pair {
                 asset_infos: asset_infos.clone(),
             })
             .unwrap(),

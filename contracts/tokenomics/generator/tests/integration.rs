@@ -1,31 +1,31 @@
-use astroport::asset::{native_asset_info, token_asset_info, Asset, AssetInfo, PairInfo};
-use astroport::generator::{ExecuteMsg, QueryMsg, StakerResponse};
 use astroport_governance::utils::WEEK;
+use paloma::asset::{native_asset_info, token_asset_info, Asset, AssetInfo, PairInfo};
+use paloma::generator::{ExecuteMsg, QueryMsg, StakerResponse};
 
-use astroport::{
-    factory::{
-        ConfigResponse as FactoryConfigResponse, ExecuteMsg as FactoryExecuteMsg,
-        InstantiateMsg as FactoryInstantiateMsg, PairConfig, PairType, QueryMsg as FactoryQueryMsg,
-    },
-    generator::{
-        Config, Cw20HookMsg as GeneratorHookMsg, ExecuteMsg as GeneratorExecuteMsg,
-        InstantiateMsg as GeneratorInstantiateMsg, PendingTokenResponse, PoolInfoResponse,
-        QueryMsg as GeneratorQueryMsg,
-    },
-    generator_proxy::{ExecuteMsg as ProxyExecuteMsg, InstantiateMsg as ProxyInstantiateMsg},
-    token::InstantiateMsg as TokenInstantiateMsg,
-    vesting::{
-        Cw20HookMsg as VestingHookMsg, InstantiateMsg as VestingInstantiateMsg, VestingAccount,
-        VestingSchedule, VestingSchedulePoint,
-    },
+use paloma::factory::{
+    ConfigResponse as FactoryConfigResponse, ExecuteMsg as FactoryExecuteMsg,
+    InstantiateMsg as FactoryInstantiateMsg, PairConfig, PairType, QueryMsg as FactoryQueryMsg,
+};
+use paloma::generator::{
+    Config, Cw20HookMsg as GeneratorHookMsg, ExecuteMsg as GeneratorExecuteMsg,
+    InstantiateMsg as GeneratorInstantiateMsg, PendingTokenResponse, PoolInfoResponse,
+    QueryMsg as GeneratorQueryMsg,
+};
+use paloma::generator_proxy::{
+    ExecuteMsg as ProxyExecuteMsg, InstantiateMsg as ProxyInstantiateMsg,
+};
+use paloma::token::InstantiateMsg as TokenInstantiateMsg;
+use paloma::vesting::{
+    Cw20HookMsg as VestingHookMsg, InstantiateMsg as VestingInstantiateMsg, VestingAccount,
+    VestingSchedule, VestingSchedulePoint,
 };
 
-use astroport::generator_proxy::ConfigResponse;
-use astroport::pair::StablePoolParams;
-use astroport_generator::error::ContractError;
 use cosmwasm_std::{to_binary, Addr, Binary, StdResult, Uint128, Uint64};
 use cw20::{BalanceResponse, Cw20ExecuteMsg, Cw20QueryMsg, MinterResponse};
 use cw_multi_test::{next_block, App, ContractWrapper, Executor};
+use paloma::generator_proxy::ConfigResponse;
+use paloma::pair::StablePoolParams;
+use paloma_generator::error::ContractError;
 
 use crate::test_utils::controller_helper::ControllerHelper;
 use crate::test_utils::{mock_app as mock_app_helper, AppExtension};
@@ -1313,7 +1313,7 @@ fn generator_without_reward_proxies() {
             .unwrap_err()
             .root_cause()
             .to_string(),
-        "astroport::generator::UserInfo not found".to_string()
+        "paloma::generator::UserInfo not found".to_string()
     );
 
     app.update_block(|bi| next_block(bi));
@@ -1998,7 +1998,7 @@ fn generator_with_vkr_reward_proxy() {
         .unwrap_err();
     assert_eq!(
         err.root_cause().to_string(),
-        "astroport::generator::UserInfo not found".to_string()
+        "paloma::generator::UserInfo not found".to_string()
     );
 
     app.update_block(|bi| next_block(bi));
@@ -2883,7 +2883,7 @@ fn update_tokens_blocked_list() {
         .execute_contract(owner.clone(), generator_instance.clone(), &msg, &[])
         .unwrap_err();
     assert_eq!(
-        "ASTRO or Terra native assets (UST, LUNA etc) cannot be blocked!",
+        "ASTRO or Terra native assets (UST, GRAIN etc) cannot be blocked!",
         err.root_cause().to_string()
     );
 
@@ -3578,9 +3578,9 @@ fn mock_app() -> App {
 
 fn store_token_code(app: &mut App) -> u64 {
     let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
-        astroport_token::contract::execute,
-        astroport_token::contract::instantiate,
-        astroport_token::contract::query,
+        paloma_token::contract::execute,
+        paloma_token::contract::instantiate,
+        paloma_token::contract::query,
     ));
 
     app.store_code(astro_token_contract)
@@ -3589,11 +3589,11 @@ fn store_token_code(app: &mut App) -> u64 {
 fn store_factory_code(app: &mut App) -> u64 {
     let factory_contract = Box::new(
         ContractWrapper::new_with_empty(
-            astroport_factory::contract::execute,
-            astroport_factory::contract::instantiate,
-            astroport_factory::contract::query,
+            paloma_factory::contract::execute,
+            paloma_factory::contract::instantiate,
+            paloma_factory::contract::query,
         )
-        .with_reply_empty(astroport_factory::contract::reply),
+        .with_reply_empty(paloma_factory::contract::reply),
     );
 
     app.store_code(factory_contract)
@@ -3602,11 +3602,11 @@ fn store_factory_code(app: &mut App) -> u64 {
 fn store_pair_code_id(app: &mut App) -> u64 {
     let pair_contract = Box::new(
         ContractWrapper::new_with_empty(
-            astroport_pair::contract::execute,
-            astroport_pair::contract::instantiate,
-            astroport_pair::contract::query,
+            paloma_pair::contract::execute,
+            paloma_pair::contract::instantiate,
+            paloma_pair::contract::query,
         )
-        .with_reply_empty(astroport_pair::contract::reply),
+        .with_reply_empty(paloma_pair::contract::reply),
     );
 
     app.store_code(pair_contract)
@@ -3615,11 +3615,11 @@ fn store_pair_code_id(app: &mut App) -> u64 {
 fn store_pair_stable_code_id(app: &mut App) -> u64 {
     let pair_contract = Box::new(
         ContractWrapper::new_with_empty(
-            astroport_pair_stable::contract::execute,
-            astroport_pair_stable::contract::instantiate,
-            astroport_pair_stable::contract::query,
+            paloma_pair_stable::contract::execute,
+            paloma_pair_stable::contract::instantiate,
+            paloma_pair_stable::contract::query,
         )
-        .with_reply_empty(astroport_pair_stable::contract::reply),
+        .with_reply_empty(paloma_pair_stable::contract::reply),
     );
 
     app.store_code(pair_contract)
@@ -3697,9 +3697,9 @@ fn instantiate_generator(
 ) -> Addr {
     // Vesting
     let vesting_contract = Box::new(ContractWrapper::new_with_empty(
-        astroport_vesting::contract::execute,
-        astroport_vesting::contract::instantiate,
-        astroport_vesting::contract::query,
+        paloma_vesting::contract::execute,
+        paloma_vesting::contract::instantiate,
+        paloma_vesting::contract::query,
     ));
     let owner = Addr::unchecked(OWNER);
     let vesting_code_id = app.store_code(vesting_contract);
@@ -3731,11 +3731,11 @@ fn instantiate_generator(
     // Generator
     let generator_contract = Box::new(
         ContractWrapper::new_with_empty(
-            astroport_generator::contract::execute,
-            astroport_generator::contract::instantiate,
-            astroport_generator::contract::query,
+            paloma_generator::contract::execute,
+            paloma_generator::contract::instantiate,
+            paloma_generator::contract::query,
         )
-        .with_reply_empty(astroport_generator::contract::reply),
+        .with_reply_empty(paloma_generator::contract::reply),
     );
 
     let whitelist_code_id = store_whitelist_code(&mut app);
@@ -4025,9 +4025,9 @@ fn create_pair(
 
 fn store_whitelist_code(app: &mut App) -> u64 {
     let whitelist_contract = Box::new(ContractWrapper::new_with_empty(
-        astroport_whitelist::contract::execute,
-        astroport_whitelist::contract::instantiate,
-        astroport_whitelist::contract::query,
+        paloma_whitelist::contract::execute,
+        paloma_whitelist::contract::instantiate,
+        paloma_whitelist::contract::query,
     ));
 
     app.store_code(whitelist_contract)

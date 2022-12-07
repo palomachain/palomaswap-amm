@@ -1,6 +1,6 @@
-# Astroport xASTRO Token
+# Paloma xASTRO Token
 
-This is the Astroport xASTRO token implementation.
+This is the Paloma xASTRO token implementation.
 
 ---
 

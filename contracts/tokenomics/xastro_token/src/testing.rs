@@ -1,6 +1,5 @@
 use crate::contract::{execute, instantiate, query_balance, query_balance_at};
 use crate::state::get_total_supply_at;
-use astroport::xastro_token::InstantiateMsg;
 use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info, MOCK_CONTRACT_ADDR};
 use cosmwasm_std::{
     Addr, Binary, BlockInfo, ContractInfo, CosmosMsg, Deps, DepsMut, Env, StdError, SubMsg,
@@ -10,6 +9,7 @@ use cw20::{Cw20Coin, Cw20ReceiveMsg, MinterResponse, TokenInfoResponse};
 use cw20_base::contract::{query_minter, query_token_info};
 use cw20_base::msg::ExecuteMsg;
 use cw20_base::ContractError;
+use paloma::xastro_token::InstantiateMsg;
 
 pub struct MockEnvParams {
     pub block_time: Timestamp,

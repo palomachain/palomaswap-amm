@@ -1,5 +1,5 @@
 import {strictEqual} from "assert"
-import {Astroport} from "./lib.js";
+import {Paloma} from "./lib.js";
 import {
     NativeAsset,
     newClient,
@@ -12,70 +12,70 @@ async function main() {
     const { terra, wallet } = newClient()
     const network = readArtifact(terra.config.chainID)
 
-    const astroport = new Astroport(terra, wallet);
+    const paloma = new Paloma(terra, wallet);
     console.log(`chainID: ${terra.config.chainID} wallet: ${wallet.key.accAddress}`)
 
     // 1. Provide liquidity
-    await provideLiquidity(network, astroport, wallet.key.accAddress)
+    await provideLiquidity(network, paloma, wallet.key.accAddress)
 
     // 2. Stake ASTRO
-    await stake(network, astroport, wallet.key.accAddress)
+    await stake(network, paloma, wallet.key.accAddress)
 
     // 3. Swap tokens in pool
-    await swap(network, astroport, wallet.key.accAddress)
+    await swap(network, paloma, wallet.key.accAddress)
 
     // 4. Collect Maker fees
-    await collectFees(network, astroport, wallet.key.accAddress)
+    await collectFees(network, paloma, wallet.key.accAddress)
 
     // 5. Withdraw liquidity
-    await withdrawLiquidity(network, astroport, wallet.key.accAddress)
+    await withdrawLiquidity(network, paloma, wallet.key.accAddress)
 
     // 6. Unstake ASTRO
-    await unstake(network, astroport, wallet.key.accAddress)
+    await unstake(network, paloma, wallet.key.accAddress)
 }
 
-async function provideLiquidity(network: any, astroport: Astroport, accAddress: string) {
+async function provideLiquidity(network: any, paloma: Paloma, accAddress: string) {
     const liquidity_amount = 100000000;
-    const pool_uust_astro = astroport.pair(network.poolAstroUst);
+    const pool_uust_astro = paloma.pair(network.poolAstroUst);
 
     // Provide liquidity in order to swap
     await pool_uust_astro.provideLiquidity(new NativeAsset('uusd', liquidity_amount.toString()), new TokenAsset(network.tokenAddress, liquidity_amount.toString()))
 
-    let astro_balance = await astroport.getTokenBalance(network.tokenAddress, accAddress);
-    let xastro_balance = await astroport.getTokenBalance(network.xastroAddress, accAddress);
+    let astro_balance = await paloma.getTokenBalance(network.tokenAddress, accAddress);
+    let xastro_balance = await paloma.getTokenBalance(network.xastroAddress, accAddress);
 
     console.log(`ASTRO balance: ${astro_balance}`)
     console.log(`xASTRO balance: ${xastro_balance}`)
 }
 
-async function withdrawLiquidity(network: any, astroport: Astroport, accAddress: string) {
-    const pool_uust_astro = astroport.pair(network.poolAstroUst);
+async function withdrawLiquidity(network: any, paloma: Paloma, accAddress: string) {
+    const pool_uust_astro = paloma.pair(network.poolAstroUst);
 
     let pair_info = await pool_uust_astro.queryPair();
-    let lp_token_amount = await astroport.getTokenBalance(pair_info.liquidity_token, accAddress);
+    let lp_token_amount = await paloma.getTokenBalance(pair_info.liquidity_token, accAddress);
 
     // Withdraw liquidity
     await pool_uust_astro.withdrawLiquidity(pair_info.liquidity_token, lp_token_amount.toString());
 
-    let astro_balance = await astroport.getTokenBalance(network.tokenAddress, accAddress);
-    let xastro_balance = await astroport.getTokenBalance(network.xastroAddress, accAddress);
+    let astro_balance = await paloma.getTokenBalance(network.tokenAddress, accAddress);
+    let xastro_balance = await paloma.getTokenBalance(network.xastroAddress, accAddress);
 
     console.log(`ASTRO balance: ${astro_balance}`)
     console.log(`xASTRO balance: ${xastro_balance}`)
 }
 
-async function stake(network: any, astroport: Astroport, accAddress: string) {
-    let astro_balance = await astroport.getTokenBalance(network.tokenAddress, accAddress);
-    let xastro_balance = await astroport.getTokenBalance(network.xastroAddress, accAddress);
+async function stake(network: any, paloma: Paloma, accAddress: string) {
+    let astro_balance = await paloma.getTokenBalance(network.tokenAddress, accAddress);
+    let xastro_balance = await paloma.getTokenBalance(network.xastroAddress, accAddress);
 
-    const staking = astroport.staking(network.stakingAddress);
+    const staking = paloma.staking(network.stakingAddress);
     const staking_amount = 100000;
 
     console.log(`Staking ${staking_amount} ASTRO`)
     await staking.stakeAstro(network.tokenAddress, staking_amount.toString())
 
-    let new_astro_balance = await astroport.getTokenBalance(network.tokenAddress, accAddress);
-    let new_xastro_balance = await astroport.getTokenBalance(network.xastroAddress, accAddress);
+    let new_astro_balance = await paloma.getTokenBalance(network.tokenAddress, accAddress);
+    let new_xastro_balance = await paloma.getTokenBalance(network.xastroAddress, accAddress);
 
     console.log(`ASTRO balance: ${new_astro_balance}`)
     console.log(`xASTRO balance: ${new_xastro_balance}`)
@@ -84,17 +84,17 @@ async function stake(network: any, astroport: Astroport, accAddress: string) {
     strictEqual(true, new_xastro_balance > xastro_balance);
 }
 
-async function unstake(network: any, astroport: Astroport, accAddress: string) {
-    let astro_balance = await astroport.getTokenBalance(network.tokenAddress, accAddress);
-    let xastro_balance = await astroport.getTokenBalance(network.xastroAddress, accAddress);
+async function unstake(network: any, paloma: Paloma, accAddress: string) {
+    let astro_balance = await paloma.getTokenBalance(network.tokenAddress, accAddress);
+    let xastro_balance = await paloma.getTokenBalance(network.xastroAddress, accAddress);
 
-    const staking = astroport.staking(network.stakingAddress);
+    const staking = paloma.staking(network.stakingAddress);
 
     console.log(`Unstaking ${xastro_balance} xASTRO`)
     await staking.unstakeAstro(network.xastroAddress, xastro_balance.toString())
 
-    let final_astro_balance = await astroport.getTokenBalance(network.tokenAddress, accAddress);
-    let final_xastro_balance = await astroport.getTokenBalance(network.xastroAddress, accAddress);
+    let final_astro_balance = await paloma.getTokenBalance(network.tokenAddress, accAddress);
+    let final_xastro_balance = await paloma.getTokenBalance(network.xastroAddress, accAddress);
 
     console.log(`ASTRO balance: ${final_astro_balance}`)
     console.log(`xASTRO balance: ${final_xastro_balance}`)
@@ -103,15 +103,15 @@ async function unstake(network: any, astroport: Astroport, accAddress: string) {
     strictEqual(final_xastro_balance, 0);
 }
 
-async function swap(network: any, astroport: Astroport, accAddress: string) {
-    const pool_uust_astro = astroport.pair(network.poolAstroUst);
-    const factory = astroport.factory(network.factoryAddress);
+async function swap(network: any, paloma: Paloma, accAddress: string) {
+    const pool_uust_astro = paloma.pair(network.poolAstroUst);
+    const factory = paloma.factory(network.factoryAddress);
     const swap_amount = 10000;
 
     let pair_info = await pool_uust_astro.queryPair();
 
-    let astro_balance = await astroport.getTokenBalance(network.tokenAddress, accAddress);
-    let xastro_balance = await astroport.getTokenBalance(network.xastroAddress, accAddress);
+    let astro_balance = await paloma.getTokenBalance(network.tokenAddress, accAddress);
+    let xastro_balance = await paloma.getTokenBalance(network.xastroAddress, accAddress);
 
     console.log(`ASTRO balance: ${astro_balance}`)
     console.log(`xASTRO balance: ${xastro_balance}`)
@@ -129,14 +129,14 @@ async function swap(network: any, astroport: Astroport, accAddress: string) {
         console.log("swap uusd to astro")
         await pool_uust_astro.swapNative(new NativeAsset('uusd', swap_amount.toString()))
 
-        let lp_token_amount = await astroport.getTokenBalance(pair_info.liquidity_token, accAddress);
+        let lp_token_amount = await paloma.getTokenBalance(pair_info.liquidity_token, accAddress);
         let share_info = await pool_uust_astro.queryShare(lp_token_amount.toString());
         console.log(share_info)
     }
 }
 
-async function collectFees(network: any, astroport: Astroport, accAddress: string) {
-    const maker = astroport.maker(network.makerAddress);
+async function collectFees(network: any, paloma: Paloma, accAddress: string) {
+    const maker = paloma.maker(network.makerAddress);
 
     let maker_cfg = await maker.queryConfig();
     strictEqual(maker_cfg.astro_token_contract, network.tokenAddress)

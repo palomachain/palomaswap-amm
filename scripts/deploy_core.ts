@@ -40,7 +40,7 @@ async function uploadAndInitToken(terra: LCDClient, wallet: any) {
     let network = readArtifact(terra.config.chainID)
 
     if (!network.tokenCodeID) {
-        network.tokenCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'astroport_token.wasm')!)
+        network.tokenCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_token.wasm')!)
         writeArtifact(network, terra.config.chainID)
         console.log(`Token codeId: ${network.tokenCodeID}`)
     }
@@ -58,7 +58,7 @@ async function uploadAndInitToken(terra: LCDClient, wallet: any) {
             terra,
             wallet,
             chainConfigs.token.admin,
-            join(ARTIFACTS_PATH, 'astroport_token.wasm'),
+            join(ARTIFACTS_PATH, 'paloma_token.wasm'),
             chainConfigs.token.initMsg,
             chainConfigs.token.label,
         )
@@ -83,13 +83,13 @@ async function uploadPairContracts(terra: LCDClient, wallet: any) {
 
     if (!network.pairCodeID) {
         console.log('Register Pair Contract...')
-        network.pairCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'astroport_pair.wasm')!)
+        network.pairCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair.wasm')!)
         writeArtifact(network, terra.config.chainID)
     }
 
     if (!network.pairStableCodeID) {
         console.log('Register Stable Pair Contract...')
-        network.pairStableCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'astroport_pair_stable.wasm')!)
+        network.pairStableCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair_stable.wasm')!)
         writeArtifact(network, terra.config.chainID)
     }
 }
@@ -99,7 +99,7 @@ async function uploadAndInitStaking(terra: LCDClient, wallet: any) {
 
     if (!network.xastroTokenCodeID) {
         console.log('Register xASTRO token contract...')
-        network.xastroTokenCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'astroport_xastro_token.wasm')!)
+        network.xastroTokenCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_xastro_token.wasm')!)
         writeArtifact(network, terra.config.chainID)
     }
 
@@ -115,7 +115,7 @@ async function uploadAndInitStaking(terra: LCDClient, wallet: any) {
             terra,
             wallet,
             chainConfigs.staking.admin,
-            join(ARTIFACTS_PATH, 'astroport_staking.wasm'),
+            join(ARTIFACTS_PATH, 'paloma_staking.wasm'),
             chainConfigs.staking.initMsg,
             chainConfigs.staking.label,
         )
@@ -161,7 +161,7 @@ async function uploadAndInitFactory(terra: LCDClient, wallet: any) {
             terra,
             wallet,
             chainConfigs.factory.admin,
-            join(ARTIFACTS_PATH, 'astroport_factory.wasm'),
+            join(ARTIFACTS_PATH, 'paloma_factory.wasm'),
             chainConfigs.factory.initMsg,
             chainConfigs.factory.label
         )
@@ -186,7 +186,7 @@ async function uploadAndInitRouter(terra: LCDClient, wallet: any) {
     let network = readArtifact(terra.config.chainID)
 
     if (!network.routerAddress) {
-        chainConfigs.router.initMsg.astroport_factory ||= network.factoryAddress
+        chainConfigs.router.initMsg.paloma_factory ||= network.factoryAddress
         chainConfigs.router.admin ||= chainConfigs.generalInfo.multisig;
 
         console.log('Deploying Router...')
@@ -194,7 +194,7 @@ async function uploadAndInitRouter(terra: LCDClient, wallet: any) {
             terra,
             wallet,
             chainConfigs.router.admin,
-            join(ARTIFACTS_PATH, 'astroport_router.wasm'),
+            join(ARTIFACTS_PATH, 'paloma_router.wasm'),
             chainConfigs.router.initMsg,
             chainConfigs.router.label
         )
@@ -221,7 +221,7 @@ async function uploadAndInitMaker(terra: LCDClient, wallet: any) {
             terra,
             wallet,
             chainConfigs.maker.admin,
-            join(ARTIFACTS_PATH, 'astroport_maker.wasm'),
+            join(ARTIFACTS_PATH, 'paloma_maker.wasm'),
             chainConfigs.maker.initMsg,
             chainConfigs.maker.label
         )
@@ -246,7 +246,7 @@ async function uploadAndInitTreasury(terra: LCDClient, wallet: any) {
 
     if (!network.whitelistCodeID) {
         console.log('Register Treasury Contract...')
-        network.whitelistCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'astroport_whitelist.wasm')!)
+        network.whitelistCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_whitelist.wasm')!)
         writeArtifact(network, terra.config.chainID)
     }
 
@@ -284,7 +284,7 @@ async function uploadAndInitVesting(terra: LCDClient, wallet: any) {
             terra,
             wallet,
             chainConfigs.vesting.admin,
-            join(ARTIFACTS_PATH, 'astroport_vesting.wasm'),
+            join(ARTIFACTS_PATH, 'paloma_vesting.wasm'),
             chainConfigs.vesting.initMsg,
             chainConfigs.vesting.label
         )
@@ -312,7 +312,7 @@ async function uploadAndInitGenerator(terra: LCDClient, wallet: any) {
             terra,
             wallet,
             chainConfigs.generator.admin,
-            join(ARTIFACTS_PATH, 'astroport_generator.wasm'),
+            join(ARTIFACTS_PATH, 'paloma_generator.wasm'),
             chainConfigs.generator.initMsg,
             chainConfigs.generator.label
         )

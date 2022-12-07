@@ -25,7 +25,7 @@ async function uploadAndInitOracle(terra: LCDClient, wallet: any, pair: Pair, ne
             terra,
             wallet,
             chainConfigs.oracle.admin,
-            join(ARTIFACTS_PATH, 'astroport_oracle.wasm'),
+            join(ARTIFACTS_PATH, 'paloma_oracle.wasm'),
             chainConfigs.oracle.initMsg,
             chainConfigs.oracle.label)
 

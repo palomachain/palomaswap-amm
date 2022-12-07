@@ -4,9 +4,9 @@ use cw_storage_plus::{Bound, Item, Map};
 use itertools::Itertools;
 
 use crate::error::ContractError;
-use astroport::asset::AssetInfo;
-use astroport::common::OwnershipProposal;
-use astroport::factory::PairConfig;
+use paloma::asset::AssetInfo;
+use paloma::common::OwnershipProposal;
+use paloma::factory::PairConfig;
 
 /// This structure holds the main contract parameters.
 #[cw_serde]
@@ -134,18 +134,18 @@ pub const PAIRS_TO_MIGRATE: Item<Vec<Addr>> = Item::new("pairs_to_migrate");
 
 #[cfg(test)]
 mod tests {
-    use astroport::asset::{native_asset_info, token_asset_info};
+    use paloma::asset::{native_asset_info, token_asset_info};
 
     use super::*;
 
     fn get_test_case() -> Vec<[AssetInfo; 2]> {
         vec![
             [
-                native_asset_info("uluna".to_string()),
+                native_asset_info("ugrain".to_string()),
                 native_asset_info("uusd".to_string()),
             ],
             [
-                native_asset_info("uluna".to_string()),
+                native_asset_info("ugrain".to_string()),
                 token_asset_info(Addr::unchecked("astro_token_addr")),
             ],
             [

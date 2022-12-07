@@ -1,4 +1,4 @@
-# Astroport Token
+# Paloma Token
 
 This is the contract implementation for the ASTRO token.
 

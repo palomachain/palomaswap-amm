@@ -1,6 +1,6 @@
-use astroport::asset::{Asset, AssetInfo};
-use astroport::pair::{CumulativePricesResponse, QueryMsg as PairQueryMsg, SimulationResponse};
 use cosmwasm_std::{QuerierWrapper, StdResult};
+use paloma::asset::{Asset, AssetInfo};
+use paloma::pair::{CumulativePricesResponse, QueryMsg as PairQueryMsg, SimulationResponse};
 
 /// Returns information about a pair's asset cumulative prices using a [`CumulativePricesResponse`] object.
 ///

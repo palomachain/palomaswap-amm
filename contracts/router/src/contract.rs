@@ -7,10 +7,10 @@ use cosmwasm_std::{
 use cw2::{get_contract_version, set_contract_version};
 use cw20::Cw20ReceiveMsg;
 
-use astroport::asset::{addr_opt_validate, addr_validate_to_lower, Asset, AssetInfo};
-use astroport::pair::{QueryMsg as PairQueryMsg, SimulationResponse};
-use astroport::querier::query_pair_info;
-use astroport::router::{
+use paloma::asset::{addr_opt_validate, addr_validate_to_lower, Asset, AssetInfo};
+use paloma::pair::{QueryMsg as PairQueryMsg, SimulationResponse};
+use paloma::querier::query_pair_info;
+use paloma::router::{
     ConfigResponse, Cw20HookMsg, ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg,
     SimulateSwapOperationsResponse, SwapOperation, MAX_SWAP_OPERATIONS,
 };
@@ -20,7 +20,7 @@ use crate::operations::execute_swap_operation;
 use crate::state::{Config, CONFIG};
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "astroport-router";
+const CONTRACT_NAME: &str = "paloma-router";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -37,7 +37,7 @@ pub fn instantiate(
     CONFIG.save(
         deps.storage,
         &Config {
-            astroport_factory: addr_validate_to_lower(deps.api, &msg.astroport_factory)?,
+            paloma_factory: addr_validate_to_lower(deps.api, &msg.paloma_factory)?,
         },
     )?;
 
@@ -265,7 +265,7 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> Result<Binary, ContractErr
 pub fn query_config(deps: Deps) -> Result<ConfigResponse, ContractError> {
     let state = CONFIG.load(deps.storage)?;
     let resp = ConfigResponse {
-        astroport_factory: state.astroport_factory.into_string(),
+        paloma_factory: state.paloma_factory.into_string(),
     };
 
     Ok(resp)
@@ -277,7 +277,7 @@ pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> Result<Response, C
     let contract_version = get_contract_version(deps.storage)?;
 
     match contract_version.contract.as_ref() {
-        "astroport-router" => match contract_version.version.as_ref() {
+        "paloma-router" => match contract_version.version.as_ref() {
             "1.0.0" => {}
             _ => return Err(ContractError::MigrationError {}),
         },
@@ -306,7 +306,7 @@ fn simulate_swap_operations(
     operations: Vec<SwapOperation>,
 ) -> Result<SimulateSwapOperationsResponse, ContractError> {
     let config = CONFIG.load(deps.storage)?;
-    let astroport_factory = config.astroport_factory;
+    let paloma_factory = config.paloma_factory;
 
     let operations_len = operations.len();
     if operations_len == 0 {
@@ -328,7 +328,7 @@ fn simulate_swap_operations(
             } => {
                 let pair_info = query_pair_info(
                     &deps.querier,
-                    astroport_factory.clone(),
+                    paloma_factory.clone(),
                     &[offer_asset_info.clone(), ask_asset_info.clone()],
                 )?;
 
@@ -428,7 +428,7 @@ mod testing {
         // Empty error
         assert_eq!(true, assert_operations(deps.as_ref().api, &[]).is_err());
 
-        // uluna output
+        // ugrain output
         assert_eq!(
             true,
             assert_operations(
@@ -436,7 +436,7 @@ mod testing {
                 &vec![
                     SwapOperation::NativeSwap {
                         offer_denom: "uusd".to_string(),
-                        ask_denom: "uluna".to_string(),
+                        ask_denom: "ugrain".to_string(),
                     },
                     SwapOperation::AstroSwap {
                         offer_asset_info: AssetInfo::NativeToken {
@@ -451,7 +451,7 @@ mod testing {
                             contract_addr: Addr::unchecked("asset0001"),
                         },
                         ask_asset_info: AssetInfo::NativeToken {
-                            denom: "uluna".to_string(),
+                            denom: "ugrain".to_string(),
                         },
                     },
                 ],
@@ -467,7 +467,7 @@ mod testing {
                 &vec![
                     SwapOperation::NativeSwap {
                         offer_denom: "uusd".to_string(),
-                        ask_denom: "uluna".to_string(),
+                        ask_denom: "ugrain".to_string(),
                     },
                     SwapOperation::AstroSwap {
                         offer_asset_info: AssetInfo::NativeToken {
@@ -482,12 +482,12 @@ mod testing {
                             contract_addr: Addr::unchecked("asset0001"),
                         },
                         ask_asset_info: AssetInfo::NativeToken {
-                            denom: "uluna".to_string(),
+                            denom: "ugrain".to_string(),
                         },
                     },
                     SwapOperation::AstroSwap {
                         offer_asset_info: AssetInfo::NativeToken {
-                            denom: "uluna".to_string(),
+                            denom: "ugrain".to_string(),
                         },
                         ask_asset_info: AssetInfo::Token {
                             contract_addr: Addr::unchecked("asset0002"),
@@ -526,7 +526,7 @@ mod testing {
                     },
                     SwapOperation::AstroSwap {
                         offer_asset_info: AssetInfo::NativeToken {
-                            denom: "uluna".to_string(),
+                            denom: "ugrain".to_string(),
                         },
                         ask_asset_info: AssetInfo::Token {
                             contract_addr: Addr::unchecked("asset0002"),

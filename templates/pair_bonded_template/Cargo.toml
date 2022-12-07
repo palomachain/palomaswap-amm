@@ -1,9 +1,9 @@
 [package]
-name = "astroport-pair-bonded-template"
+name = "paloma-pair-bonded-template"
 version = "1.0.0"
-authors = ["Astroport"]
+authors = ["Paloma"]
 edition = "2021"
-description = "The Astroport pair-bonded template."
+description = "The Paloma pair-bonded template."
 license = "MIT"
 
 exclude = [
@@ -24,8 +24,8 @@ backtraces = ["cosmwasm-std/backtraces"]
 library = []
 
 [dependencies]
-astroport = { path = "../../packages/astroport", default-features = false }
-astroport-pair-bonded = { path = "../../packages/pair_bonded" }
+paloma = { path = "../../packages/paloma", default-features = false }
+paloma-pair-bonded = { path = "../../packages/pair_bonded" }
 cw2 = { version = "0.15" }
 cw20 = { version = "0.15" }
 cosmwasm-std = { version = "1.1" }

@@ -8,13 +8,13 @@ use crate::math::{calc_ask_amount, calc_offer_amount, AMP_PRECISION};
 use crate::mock_querier::mock_dependencies;
 use crate::response::MsgInstantiateContractResponse;
 use crate::state::Config;
-use astroport::asset::{Asset, AssetInfo, PairInfo};
-use astroport::pair::{
+use paloma::asset::{Asset, AssetInfo, PairInfo};
+use paloma::pair::{
     Cw20HookMsg, InstantiateMsg, PoolResponse, ReverseSimulationResponse, SimulationResponse,
     TWAP_PRECISION,
 };
-use astroport::pair_stable_bluna::{ExecuteMsg, StablePoolParams};
-use astroport::token::InstantiateMsg as TokenInstantiateMsg;
+use paloma::pair_stable_bgrain::{ExecuteMsg, StablePoolParams};
+use paloma::token::InstantiateMsg as TokenInstantiateMsg;
 use cosmwasm_std::testing::{mock_env, mock_info, MOCK_CONTRACT_ADDR};
 use cosmwasm_std::{
     attr, to_binary, Addr, BankMsg, BlockInfo, Coin, CosmosMsg, Decimal, Decimal256, DepsMut, Env,
@@ -71,7 +71,7 @@ fn proper_initialization() {
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
-                bluna_rewarder: "bluna_rewarder".to_string(),
+                bgrain_rewarder: "bgrain_rewarder".to_string(),
                 generator: "generator".to_string(),
             })
             .unwrap(),
@@ -96,7 +96,7 @@ fn proper_initialization() {
                     .unwrap(),
                     funds: vec![],
                     admin: None,
-                    label: String::from("Bluna rewarder"),
+                    label: String::from("Bgrain rewarder"),
                 }
                 .into(),
                 id: 2,
@@ -120,7 +120,7 @@ fn proper_initialization() {
                     .unwrap(),
                     funds: vec![],
                     admin: None,
-                    label: String::from("Astroport LP token"),
+                    label: String::from("Paloma LP token"),
                 }
                 .into(),
                 id: 1,
@@ -166,7 +166,7 @@ fn provide_liquidity() {
             &[(&String::from(MOCK_CONTRACT_ADDR), &Uint128::new(0))],
         ),
         (
-            &String::from("bluna_rewarder"),
+            &String::from("bgrain_rewarder"),
             &[(&String::from(MOCK_CONTRACT_ADDR), &Uint128::new(1000))],
         ),
     ]);
@@ -185,7 +185,7 @@ fn provide_liquidity() {
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
-                bluna_rewarder: "bluna_rewarder".to_string(),
+                bgrain_rewarder: "bgrain_rewarder".to_string(),
                 generator: "generator".to_string(),
             })
             .unwrap(),
@@ -341,7 +341,7 @@ fn withdraw_liquidity() {
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
-                bluna_rewarder: "bluna_rewarder".to_string(),
+                bgrain_rewarder: "bgrain_rewarder".to_string(),
                 generator: "generator".to_string(),
             })
             .unwrap(),
@@ -469,7 +469,7 @@ fn try_native_to_token() {
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
-                bluna_rewarder: "bluna_rewarder".to_string(),
+                bgrain_rewarder: "bgrain_rewarder".to_string(),
                 generator: "generator".to_string(),
             })
             .unwrap(),
@@ -627,7 +627,7 @@ fn try_token_to_native() {
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
-                bluna_rewarder: "bluna_rewarder".to_string(),
+                bgrain_rewarder: "bgrain_rewarder".to_string(),
                 generator: "generator".to_string(),
             })
             .unwrap(),
@@ -880,7 +880,7 @@ fn test_query_pool() {
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
-                bluna_rewarder: "bluna_rewarder".to_string(),
+                bgrain_rewarder: "bgrain_rewarder".to_string(),
                 generator: "generator".to_string(),
             })
             .unwrap(),
@@ -952,7 +952,7 @@ fn test_query_share() {
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
-                bluna_rewarder: "bluna_rewarder".to_string(),
+                bgrain_rewarder: "bgrain_rewarder".to_string(),
                 generator: "generator".to_string(),
             })
             .unwrap(),
@@ -1073,7 +1073,7 @@ fn test_accumulate_prices() {
                 init_amp_time: env.block.time.seconds(),
                 next_amp: 100 * AMP_PRECISION,
                 next_amp_time: env.block.time.seconds(),
-                bluna_rewarder: Addr::unchecked(""),
+                bgrain_rewarder: Addr::unchecked(""),
                 generator: Addr::unchecked("generator"),
             },
             Uint128::new(case.x_amount),
@@ -1123,7 +1123,7 @@ fn test_calc_user_reward() {
     .unwrap_err();
 
     // All rewards are awarded to one user
-    let (bluna_reward_global_index, latest_reward_amount, user_reward) = calc_user_reward(
+    let (bgrain_reward_global_index, latest_reward_amount, user_reward) = calc_user_reward(
         Uint128::new(10000),
         Uint128::new(1000),
         Uint128::new(100),
@@ -1134,13 +1134,13 @@ fn test_calc_user_reward() {
     .unwrap();
     assert_eq!(
         Decimal256::from_str("190").unwrap(),
-        bluna_reward_global_index
+        bgrain_reward_global_index
     );
     assert_eq!(Uint128::new(9000), latest_reward_amount);
     assert_eq!(Uint128::new(9000), user_reward);
 
     // Only 10% of the reward is given to the user
-    let (bluna_reward_global_index, latest_reward_amount, user_reward) = calc_user_reward(
+    let (bgrain_reward_global_index, latest_reward_amount, user_reward) = calc_user_reward(
         Uint128::new(10000),
         Uint128::new(1000),
         Uint128::new(10),
@@ -1151,13 +1151,13 @@ fn test_calc_user_reward() {
     .unwrap();
     assert_eq!(
         Decimal256::from_str("190").unwrap(),
-        bluna_reward_global_index
+        bgrain_reward_global_index
     );
     assert_eq!(Uint128::new(9000), latest_reward_amount);
     assert_eq!(Uint128::new(900), user_reward);
 }
 
-use astroport::factory::PairType;
+use paloma::factory::PairType;
 use proptest::prelude::*;
 use sim::StableSwapModel;
 

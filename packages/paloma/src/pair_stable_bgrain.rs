@@ -13,7 +13,7 @@ use cw20::Cw20ReceiveMsg;
 pub enum ExecuteMsg {
     /// Receives a message of type [`Cw20ReceiveMsg`]
     Receive(Cw20ReceiveMsg),
-    /// ProvideLiquidity allows an account to provide liquidity in a pool with bLUNA
+    /// ProvideLiquidity allows an account to provide liquidity in a pool with bGRAIN
     ProvideLiquidity {
         /// The two assets available in the pool
         assets: [Asset; 2],
@@ -33,12 +33,12 @@ pub enum ExecuteMsg {
     },
     /// Update the pair configuration
     UpdateConfig { params: Binary },
-    /// Claims bLUNA rewards and sends them to the specified receiver
+    /// Claims bGRAIN rewards and sends them to the specified receiver
     ClaimReward {
-        /// An address which will receive the bLUNA reward
+        /// An address which will receive the bGRAIN reward
         receiver: Option<String>,
     },
-    /// Claims the bLUNA reward for a user that deposited their LP tokens in the Generator contract
+    /// Claims the bGRAIN reward for a user that deposited their LP tokens in the Generator contract
     ClaimRewardByGenerator {
         /// The user whose LP tokens are/were staked in the Generator
         user: String,
@@ -47,7 +47,7 @@ pub enum ExecuteMsg {
         /// The total LP token amount already deposited by all users in the Generator
         total_share: Uint128,
     },
-    /// Callback for distributing bLUNA rewards
+    /// Callback for distributing bGRAIN rewards
     HandleReward {
         previous_reward_balance: Uint128,
         user: Addr,
@@ -87,14 +87,14 @@ pub enum QueryMsg {
     PendingReward { user: String },
 }
 
-/// This struct is used to store bLUNA stableswap specific parameters.
+/// This struct is used to store bGRAIN stableswap specific parameters.
 #[cw_serde]
 pub struct StablePoolParams {
     /// The current pool amplification
     pub amp: u64,
-    /// The bLUNA rewarder contract
-    pub bluna_rewarder: String,
-    /// The Astroport Generator contract
+    /// The bGRAIN rewarder contract
+    pub bgrain_rewarder: String,
+    /// The Paloma Generator contract
     pub generator: String,
 }
 
@@ -103,25 +103,25 @@ pub struct StablePoolParams {
 pub struct StablePoolConfig {
     /// The current pool amplification
     pub amp: Decimal,
-    /// The bLUNA rewarder contract
-    pub bluna_rewarder: Addr,
-    /// The Astroport Generator contract
+    /// The bGRAIN rewarder contract
+    pub bgrain_rewarder: Addr,
+    /// The Paloma Generator contract
     pub generator: Addr,
 }
 
-/// This enum stores the options available to update bLUNA stableswap pool parameters.
+/// This enum stores the options available to update bGRAIN stableswap pool parameters.
 #[cw_serde]
 pub enum StablePoolUpdateParams {
     StartChangingAmp { next_amp: u64, next_amp_time: u64 },
     StopChangingAmp {},
-    BlunaRewarder { address: String },
+    BgrainRewarder { address: String },
 }
 
-/// This struct contains the parameters used to migrate the bLUNA-LUNA stableswap pool implementation.
+/// This struct contains the parameters used to migrate the bGRAIN-GRAIN stableswap pool implementation.
 #[cw_serde]
 pub struct MigrateMsg {
-    /// The bLUNA rewarder contract
-    pub bluna_rewarder: Option<String>,
-    /// The Astroport Generator contract
+    /// The bGRAIN rewarder contract
+    pub bgrain_rewarder: Option<String>,
+    /// The Paloma Generator contract
     pub generator: Option<String>,
 }

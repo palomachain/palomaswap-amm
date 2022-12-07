@@ -5,7 +5,7 @@ use crate::math::{
 };
 use crate::migration::CONFIG_PAIR_STABLE_V100;
 use crate::state::{
-    Config, BLUNA_REWARD_GLOBAL_INDEX, BLUNA_REWARD_HOLDER, BLUNA_REWARD_USER_INDEXES, CONFIG,
+    Config, BGRAIN_REWARD_GLOBAL_INDEX, BGRAIN_REWARD_HOLDER, BGRAIN_REWARD_USER_INDEXES, CONFIG,
 };
 
 use cosmwasm_std::{
@@ -15,30 +15,30 @@ use cosmwasm_std::{
 };
 
 use crate::response::MsgInstantiateContractResponse;
-use astroport::asset::{
+use paloma::asset::{
     addr_validate_to_lower, check_swap_parameters, format_lp_token_name, token_asset_info, Asset,
     AssetInfo, PairInfo,
 };
-use astroport::factory::PairType;
+use paloma::factory::PairType;
 
-use astroport::generator::{
+use paloma::generator::{
     Cw20HookMsg as GeneratorHookMsg, PoolInfoResponse, QueryMsg as GeneratorQueryMsg,
 };
-use astroport::pair::{
+use paloma::pair::{
     migration_check, ConfigResponse, CumulativePricesResponse, Cw20HookMsg, InstantiateMsg,
     PoolResponse, ReverseSimulationResponse, SimulationResponse, DEFAULT_SLIPPAGE,
     MAX_ALLOWED_SLIPPAGE, TWAP_PRECISION,
 };
-use astroport::pair_stable_bluna::{
+use paloma::pair_stable_bgrain::{
     ExecuteMsg, MigrateMsg, QueryMsg, StablePoolConfig, StablePoolParams, StablePoolUpdateParams,
 };
 use cw1_whitelist::msg::InstantiateMsg as WhitelistInstantiateMsg;
 
 use anchor_basset::reward::{AccruedRewardsResponse, QueryMsg as BAssetRewardQueryMsg};
-use astroport::querier::{
+use paloma::querier::{
     query_factory_config, query_fee_info, query_supply, query_token_precision,
 };
-use astroport::{token::InstantiateMsg as TokenInstantiateMsg, U256};
+use paloma::{token::InstantiateMsg as TokenInstantiateMsg, U256};
 use cw2::{get_contract_version, set_contract_version};
 use cw20::{Cw20ExecuteMsg, Cw20ReceiveMsg, MinterResponse};
 use protobuf::Message;
@@ -48,12 +48,12 @@ use std::str::FromStr;
 use std::vec;
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "astroport-pair-stable-bluna";
+const CONTRACT_NAME: &str = "paloma-pair-stable-bgrain";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 /// `reply` call code IDs used for sub-messages.
 const INSTANTIATE_TOKEN_REPLY_ID: u64 = 1;
-const INSTANTIATE_BLUNA_REWARD_HOLDER_REPLY_ID: u64 = 2;
+const INSTANTIATE_BGRAIN_REWARD_HOLDER_REPLY_ID: u64 = 2;
 
 /// ## Description
 /// Creates a new contract with the specified parameters in the [`InstantiateMsg`].
@@ -90,7 +90,7 @@ pub fn instantiate(
         return Err(ContractError::IncorrectAmp {});
     }
 
-    let mut messages: Vec<SubMsg> = vec![get_bluna_reward_holder_instantiating_message(
+    let mut messages: Vec<SubMsg> = vec![get_bgrain_reward_holder_instantiating_message(
         deps.as_ref(),
         &env,
         &addr_validate_to_lower(deps.api, &msg.factory_addr)?,
@@ -113,7 +113,7 @@ pub fn instantiate(
         init_amp_time: env.block.time.seconds(),
         next_amp: params.amp * AMP_PRECISION,
         next_amp_time: env.block.time.seconds(),
-        bluna_rewarder: addr_validate_to_lower(deps.api, params.bluna_rewarder.as_str())?,
+        bgrain_rewarder: addr_validate_to_lower(deps.api, params.bgrain_rewarder.as_str())?,
         generator: addr_validate_to_lower(deps.api, params.generator.as_str())?,
     };
 
@@ -138,7 +138,7 @@ pub fn instantiate(
             })?,
             funds: vec![],
             admin: None,
-            label: String::from("Astroport LP token"),
+            label: String::from("Paloma LP token"),
         }
         .into(),
         id: INSTANTIATE_TOKEN_REPLY_ID,
@@ -184,10 +184,10 @@ pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractE
                 config.pair_info.liquidity_token,
             ));
         }
-        INSTANTIATE_BLUNA_REWARD_HOLDER_REPLY_ID => {
+        INSTANTIATE_BGRAIN_REWARD_HOLDER_REPLY_ID => {
             let addr = addr_validate_to_lower(deps.api, res.get_contract_address())?;
-            BLUNA_REWARD_HOLDER.save(deps.storage, &addr)?;
-            response.attributes.push(attr("bluna_reward_holder", addr))
+            BGRAIN_REWARD_HOLDER.save(deps.storage, &addr)?;
+            response.attributes.push(attr("bgrain_reward_holder", addr))
         }
         _ => return Err(ContractError::Unauthorized {}),
     };
@@ -230,20 +230,20 @@ pub fn reply(deps: DepsMut, _env: Env, msg: Reply) -> Result<Response, ContractE
 ///             receiver,
 ///             user_share,
 ///             total_share,
-///         }** Claims bLUNA rewards and sends them to the receiver.
+///         }** Claims bGRAIN rewards and sends them to the receiver.
 ///
 /// * **ExecuteMsg::ClaimRewardByGenerator {
 ///             receiver,
 ///             user_share,
 ///             total_share,
-///         }** Claims bLUNA rewards for a LP position that was staked by a user in the Astroprot Generator contract.
+///         }** Claims bGRAIN rewards for a LP position that was staked by a user in the Astroprot Generator contract.
 ///
 /// * **ExecuteMsg::HandleReward {
 ///             previous_reward_balance,
 ///             user_share,
 ///             total_share,
 ///             user,
-///         }** Handles and distributes bLUNA rewards.
+///         }** Handles and distributes bGRAIN rewards.
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
     deps: DepsMut,
@@ -1026,7 +1026,7 @@ pub fn calculate_maker_fee(
 ///
 /// * **QueryMsg::Config {}** Returns the configuration for the pair contract using a [`ConfigResponse`] object.
 ///
-/// * **QueryMsg::PendingReward {}** Returns the amount of bLUNA pending rewards for a specific address using an [`Asset`] object.
+/// * **QueryMsg::PendingReward {}** Returns the amount of bGRAIN pending rewards for a specific address using an [`Asset`] object.
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
@@ -1236,7 +1236,7 @@ pub fn query_config(deps: Deps, env: Env) -> StdResult<ConfigResponse> {
         block_time_last: config.block_time_last,
         params: Some(to_binary(&StablePoolConfig {
             amp: Decimal::from_ratio(compute_current_amp(&config, &env)?, AMP_PRECISION),
-            bluna_rewarder: config.bluna_rewarder,
+            bgrain_rewarder: config.bgrain_rewarder,
             generator: config.generator,
         })?),
         owner: None,
@@ -1244,13 +1244,13 @@ pub fn query_config(deps: Deps, env: Env) -> StdResult<ConfigResponse> {
 }
 
 /// ## Description
-/// Returns the amount of bLUNA pending rewards for a specific address using a [`Asset`] object.
+/// Returns the amount of bGRAIN pending rewards for a specific address using a [`Asset`] object.
 /// ## Params
 /// * **deps** is an object of type [`Deps`].
 ///
 /// * **env** is an object of type [`Env`].
 ///
-/// * **user** is an object of type [`String`]. This is the address for which we query the amount of pending bLUNA rewards to claim.
+/// * **user** is an object of type [`String`]. This is the address for which we query the amount of pending bGRAIN rewards to claim.
 pub fn query_pending_reward(deps: Deps, env: Env, user: String) -> StdResult<Asset> {
     use cosmwasm_std::Decimal256;
 
@@ -1266,11 +1266,11 @@ pub fn query_pending_reward(deps: Deps, env: Env, user: String) -> StdResult<Ass
         },
     )?;
 
-    let global_index = BLUNA_REWARD_GLOBAL_INDEX
+    let global_index = BGRAIN_REWARD_GLOBAL_INDEX
         .may_load(deps.storage)?
         .unwrap_or_default();
 
-    let user_index_opt = BLUNA_REWARD_USER_INDEXES.may_load(deps.storage, &user)?;
+    let user_index_opt = BGRAIN_REWARD_USER_INDEXES.may_load(deps.storage, &user)?;
 
     let user_index = if let Some(user_index) = user_index_opt {
         user_index
@@ -1281,7 +1281,7 @@ pub fn query_pending_reward(deps: Deps, env: Env, user: String) -> StdResult<Ass
     };
 
     let accrued_rewards: AccruedRewardsResponse = deps.querier.query_wasm_smart(
-        config.bluna_rewarder,
+        config.bgrain_rewarder,
         &BAssetRewardQueryMsg::AccruedRewards {
             address: env.contract.address.to_string(),
         },
@@ -1526,13 +1526,13 @@ pub fn migrate(deps: DepsMut, env: Env, msg: MigrateMsg) -> Result<Response, Con
         .add_attribute("previous_contract_version", &contract_version.version);
 
     match contract_version.contract.as_ref() {
-        "astroport-pair-stable" => match contract_version.version.as_ref() {
+        "paloma-pair-stable" => match contract_version.version.as_ref() {
             "1.0.0" | "1.0.0-fix1" => {
                 let config = CONFIG_PAIR_STABLE_V100.load(deps.storage)?;
                 let new_config = crate::state::Config {
-                    bluna_rewarder: addr_validate_to_lower(
+                    bgrain_rewarder: addr_validate_to_lower(
                         deps.api,
-                        &msg.bluna_rewarder.ok_or(ContractError::MigrationError {})?,
+                        &msg.bgrain_rewarder.ok_or(ContractError::MigrationError {})?,
                     )?,
                     generator: addr_validate_to_lower(
                         deps.api,
@@ -1551,7 +1551,7 @@ pub fn migrate(deps: DepsMut, env: Env, msg: MigrateMsg) -> Result<Response, Con
                 CONFIG.save(deps.storage, &new_config)?;
                 response
                     .messages
-                    .push(get_bluna_reward_holder_instantiating_message(
+                    .push(get_bgrain_reward_holder_instantiating_message(
                         deps.as_ref(),
                         &env,
                         &config.factory_addr,
@@ -1559,7 +1559,7 @@ pub fn migrate(deps: DepsMut, env: Env, msg: MigrateMsg) -> Result<Response, Con
             }
             _ => return Err(ContractError::MigrationError {}),
         },
-        "astroport-pair-stable-bluna" => match contract_version.version.as_ref() {
+        "paloma-pair-stable-bgrain" => match contract_version.version.as_ref() {
             "1.0.1" => {}
             _ => return Err(ContractError::MigrationError {}),
         },
@@ -1618,10 +1618,10 @@ pub fn update_config(
             next_amp_time,
         } => start_changing_amp(config, deps, env, next_amp, next_amp_time)?,
         StablePoolUpdateParams::StopChangingAmp {} => stop_changing_amp(config, deps, env)?,
-        StablePoolUpdateParams::BlunaRewarder { address } => {
+        StablePoolUpdateParams::BgrainRewarder { address } => {
             let address = addr_validate_to_lower(deps.as_ref().api, &address)?;
             CONFIG.update::<_, StdError>(deps.storage, |mut cfg| {
-                cfg.bluna_rewarder = address;
+                cfg.bgrain_rewarder = address;
                 Ok(cfg)
             })?;
         }
@@ -1736,7 +1736,7 @@ fn compute_current_amp(config: &Config, env: &Env) -> StdResult<u64> {
 }
 
 /// ## Description
-/// Return a message object that can help claim bLUNA rewards for an account.
+/// Return a message object that can help claim bGRAIN rewards for an account.
 /// Returns an [`ContractError`] on failure, otherwise returns the object
 /// of type [`SubMsg`].
 /// ## Params
@@ -1744,8 +1744,8 @@ fn compute_current_amp(config: &Config, env: &Env) -> StdResult<u64> {
 ///
 /// * **env** is an object of type [`Env`].
 ///
-/// * **factory_addr** is an object of type [`Addr`]. This is the Astroport factory address.
-fn get_bluna_reward_holder_instantiating_message(
+/// * **factory_addr** is an object of type [`Addr`]. This is the Paloma factory address.
+fn get_bgrain_reward_holder_instantiating_message(
     deps: Deps,
     env: &Env,
     factory_addr: &Addr,
@@ -1755,20 +1755,20 @@ fn get_bluna_reward_holder_instantiating_message(
             admin: None,
             code_id: query_factory_config(&deps.querier, factory_addr.clone())?.whitelist_code_id,
             funds: vec![],
-            label: "Bluna rewarder".to_string(),
+            label: "Bgrain rewarder".to_string(),
             msg: to_binary(&WhitelistInstantiateMsg {
                 admins: vec![env.contract.address.to_string()],
                 mutable: false,
             })?,
         }),
-        id: INSTANTIATE_BLUNA_REWARD_HOLDER_REPLY_ID,
+        id: INSTANTIATE_BGRAIN_REWARD_HOLDER_REPLY_ID,
         gas_limit: None,
         reply_on: ReplyOn::Success,
     })
 }
 
 /// ## Description
-/// Returns a vector of messages that are meant to claim bLUNA rewards for a specific user.
+/// Returns a vector of messages that are meant to claim bGRAIN rewards for a specific user.
 /// Returns a [`ContractError`] on failure, otherwise returns the vector that contains objects
 /// of type [`CosmosMsg`].
 /// ## Params
@@ -1776,38 +1776,38 @@ fn get_bluna_reward_holder_instantiating_message(
 ///
 /// * **env** is an object of type [`Env`].
 ///
-/// * **bluna_rewarder** is an object of type [`str`]. This is the contract that distributes bLUNA rewards.
+/// * **bgrain_rewarder** is an object of type [`str`]. This is the contract that distributes bGRAIN rewards.
 ///
 /// * **user** is an object of type [`Addr`]. This is the address for which we return messages that are meant to claim rewards.
 ///
-/// * **user_share** is an object of type [`Uint128`]. This is the share of the bLUNA rewards that the `user` is entitled to.
+/// * **user_share** is an object of type [`Uint128`]. This is the share of the bGRAIN rewards that the `user` is entitled to.
 ///
-/// * **total_share** is an object of type [`Uint128`]. This is the total amount of bLUNA rewards entitled to bLUNA LPs.
+/// * **total_share** is an object of type [`Uint128`]. This is the total amount of bGRAIN rewards entitled to bGRAIN LPs.
 ///
-/// * **receiver** is an object of type [`Option<Addr>`]. This is a custom address that can receive the bLUNA rewards.
+/// * **receiver** is an object of type [`Option<Addr>`]. This is a custom address that can receive the bGRAIN rewards.
 /// If it's not present, the function defaults to the `user`.
-fn get_bluna_reward_handling_messages(
+fn get_bgrain_reward_handling_messages(
     deps: Deps,
     env: &Env,
-    bluna_rewarder: &str,
+    bgrain_rewarder: &str,
     user: Addr,
     user_share: Uint128,
     total_share: Uint128,
     receiver: Option<Addr>,
 ) -> Result<Vec<CosmosMsg>, ContractError> {
-    let bluna_reward_holder = BLUNA_REWARD_HOLDER.load(deps.storage)?;
+    let bgrain_reward_holder = BGRAIN_REWARD_HOLDER.load(deps.storage)?;
 
-    let reward_balance = astroport::querier::query_balance(
+    let reward_balance = paloma::querier::query_balance(
         &deps.querier,
-        bluna_reward_holder.clone(),
+        bgrain_reward_holder.clone(),
         "uusd".to_string(),
     )?;
 
     Ok(vec![
         CosmosMsg::Wasm(WasmMsg::Execute {
-            contract_addr: bluna_rewarder.to_string(),
+            contract_addr: bgrain_rewarder.to_string(),
             msg: to_binary(&anchor_basset::reward::ExecuteMsg::ClaimRewards {
-                recipient: Some(bluna_reward_holder.to_string()),
+                recipient: Some(bgrain_reward_holder.to_string()),
             })?,
             funds: vec![],
         }),
@@ -1826,7 +1826,7 @@ fn get_bluna_reward_handling_messages(
 }
 
 /// ## Description
-/// Claims bLUNA rewards on behalf of the function caller and sends them to the specified receiver.
+/// Claims bGRAIN rewards on behalf of the function caller and sends them to the specified receiver.
 /// Returns A [`ContractError`] on failure, otherwise returns A [`Response`] with the specified attributes if the operation was successful.
 /// ## Params
 /// * **deps** is an object of type [`Deps`].
@@ -1835,7 +1835,7 @@ fn get_bluna_reward_handling_messages(
 ///
 /// * **info** is an object of type [`MessageInfo`].
 ///
-/// * **receiver** is an object of type [`Option<String>`]. This is the address that receives the bLUNA rewards.
+/// * **receiver** is an object of type [`Option<String>`]. This is the address that receives the bGRAIN rewards.
 fn claim_reward(
     deps: DepsMut,
     env: Env,
@@ -1868,10 +1868,10 @@ fn claim_reward(
     )?;
 
     Ok(
-        Response::new().add_messages(get_bluna_reward_handling_messages(
+        Response::new().add_messages(get_bgrain_reward_handling_messages(
             deps.as_ref(),
             &env,
-            config.bluna_rewarder.as_str(),
+            config.bgrain_rewarder.as_str(),
             info.sender,
             user_share,
             pool_info.lp_supply,
@@ -1881,7 +1881,7 @@ fn claim_reward(
 }
 
 /// ## Description
-/// Claims bLUNA rewards on behalf of stakers that deposited their LP tokens in the Generator contract.
+/// Claims bGRAIN rewards on behalf of stakers that deposited their LP tokens in the Generator contract.
 /// Returns a [`ContractError`] on failure, otherwise returns a [`Response`] with the
 /// specified attributes if the operation was successful.
 /// ## Params
@@ -1892,11 +1892,11 @@ fn claim_reward(
 /// * **info** is an object of type [`MessageInfo`].
 ///
 /// * **user** is an object of type [`String`].
-/// This is the user for which to claim bLUNA rewards that were accrued by the Generator on their behalf.
+/// This is the user for which to claim bGRAIN rewards that were accrued by the Generator on their behalf.
 ///
-/// * **user_share** is an object of type [`Uint128`]. This is the user's share of bLUNA rewards.
+/// * **user_share** is an object of type [`Uint128`]. This is the user's share of bGRAIN rewards.
 ///
-/// * **total_share** is an object of type [`Uint128`]. This is the total share of bLUNA rewards that need to be distributed.
+/// * **total_share** is an object of type [`Uint128`]. This is the total share of bGRAIN rewards that need to be distributed.
 fn claim_reward_by_generator(
     deps: DepsMut,
     env: Env,
@@ -1914,10 +1914,10 @@ fn claim_reward_by_generator(
     }
 
     Ok(
-        Response::new().add_messages(get_bluna_reward_handling_messages(
+        Response::new().add_messages(get_bgrain_reward_handling_messages(
             deps.as_ref(),
             &env,
-            config.bluna_rewarder.as_str(),
+            config.bgrain_rewarder.as_str(),
             user,
             user_share,
             total_share,
@@ -1927,7 +1927,7 @@ fn claim_reward_by_generator(
 }
 
 /// ## Description
-/// Handles and distributes bLUNA rewards.
+/// Handles and distributes bGRAIN rewards.
 /// Returns a [`ContractError`] on failure, otherwise returns a [`Response`] with the
 /// specified attributes if the operation was successful.
 /// ## Params
@@ -1938,15 +1938,15 @@ fn claim_reward_by_generator(
 /// * **info** is an object of type [`MessageInfo`].
 ///
 /// * **previous_reward_balance** is an object of type [`Uint128`].
-/// This is the previous bLUNA rewards balance that had to be distributed to LPs.
+/// This is the previous bGRAIN rewards balance that had to be distributed to LPs.
 ///
-/// * **user** is an object of type [`Addr`]. This is the address for which we distribute bLUNA rewards.
+/// * **user** is an object of type [`Addr`]. This is the address for which we distribute bGRAIN rewards.
 ///
-/// * **user_share** is an object of type [`Uint128`]. This is the user's share of bLUNA rewards.
+/// * **user_share** is an object of type [`Uint128`]. This is the user's share of bGRAIN rewards.
 ///
-/// * **total_share** is an object of type [`Uint128`]. This is the total share of bLUNA rewards that need to be distributed.
+/// * **total_share** is an object of type [`Uint128`]. This is the total share of bGRAIN rewards that need to be distributed.
 ///
-/// * **receiver** is an object of type [`Option<Addr>`]. This is the address that will receive bLUNA rewards.
+/// * **receiver** is an object of type [`Option<Addr>`]. This is the address that will receive bGRAIN rewards.
 #[allow(clippy::too_many_arguments)]
 pub fn handle_reward(
     deps: DepsMut,
@@ -1966,37 +1966,37 @@ pub fn handle_reward(
 
     let receiver = receiver.unwrap_or_else(|| user.clone());
 
-    let bluna_reward_holder = BLUNA_REWARD_HOLDER.load(deps.storage)?;
+    let bgrain_reward_holder = BGRAIN_REWARD_HOLDER.load(deps.storage)?;
 
-    let reward_balance = astroport::querier::query_balance(
+    let reward_balance = paloma::querier::query_balance(
         &deps.querier,
-        bluna_reward_holder.clone(),
+        bgrain_reward_holder.clone(),
         "uusd".to_string(),
     )?;
 
-    let bluna_reward_global_index = BLUNA_REWARD_GLOBAL_INDEX
+    let bgrain_reward_global_index = BGRAIN_REWARD_GLOBAL_INDEX
         .may_load(deps.storage)?
         .unwrap_or_default();
-    let bluna_reward_user_index = BLUNA_REWARD_USER_INDEXES.may_load(deps.storage, &user)?;
+    let bgrain_reward_user_index = BGRAIN_REWARD_USER_INDEXES.may_load(deps.storage, &user)?;
 
-    let (bluna_reward_global_index, latest_reward_amount, user_reward) = calc_user_reward(
+    let (bgrain_reward_global_index, latest_reward_amount, user_reward) = calc_user_reward(
         reward_balance,
         previous_reward_balance,
         user_share,
         total_share,
-        bluna_reward_global_index,
-        bluna_reward_user_index,
+        bgrain_reward_global_index,
+        bgrain_reward_user_index,
     )?;
 
-    BLUNA_REWARD_GLOBAL_INDEX.save(deps.storage, &bluna_reward_global_index)?;
-    BLUNA_REWARD_USER_INDEXES.save(deps.storage, &user, &bluna_reward_global_index)?;
+    BGRAIN_REWARD_GLOBAL_INDEX.save(deps.storage, &bgrain_reward_global_index)?;
+    BGRAIN_REWARD_USER_INDEXES.save(deps.storage, &user, &bgrain_reward_global_index)?;
 
     let mut response =
-        Response::new().add_attribute("bluna_claimed_reward_to_pool", latest_reward_amount);
+        Response::new().add_attribute("bgrain_claimed_reward_to_pool", latest_reward_amount);
 
     if !user_reward.is_zero() {
         response.messages.push(SubMsg::new(WasmMsg::Execute {
-            contract_addr: bluna_reward_holder.to_string(),
+            contract_addr: bgrain_reward_holder.to_string(),
             funds: vec![],
             msg: to_binary(&ExecuteMsg::Execute {
                 msgs: vec![Asset {
@@ -2013,55 +2013,55 @@ pub fn handle_reward(
     Ok(response
         .add_attribute("user", user)
         .add_attribute("receiver", receiver)
-        .add_attribute("sent_bluna_reward", user_reward))
+        .add_attribute("sent_bgrain_reward", user_reward))
 }
 
 /// ## Description
-/// Calculate the amount of bLUNA rewards that a user can claim.
+/// Calculate the amount of bGRAIN rewards that a user can claim.
 /// Returns a [`ContractError`] on failure, otherwise returns the tuple values
-/// [bluna_reward_global_index, latest_reward_amount and user_reward].
+/// [bgrain_reward_global_index, latest_reward_amount and user_reward].
 /// ## Params
 /// * **reward_balance** is an object of type [`Uint128`].
-/// This is the total amount of bLUNA rewards that the bLUNA reward distributor currently holds.
+/// This is the total amount of bGRAIN rewards that the bGRAIN reward distributor currently holds.
 ///
 /// * **previous_reward_balance** is an object of type [`Uint128`].
-/// This is the total amount of bLUNA rewards that the bLUNA reward distributor previously held.
+/// This is the total amount of bGRAIN rewards that the bGRAIN reward distributor previously held.
 ///
-/// * **user_share** is an object of type [`Uint128`]. This is the portion of bLUNA rewards that the user can claim.
+/// * **user_share** is an object of type [`Uint128`]. This is the portion of bGRAIN rewards that the user can claim.
 ///
-/// * **total_share** is an object of type [`Uint128`]. This is the total share of bLUNA rewards that go to bLUNA Astroport LPs.
+/// * **total_share** is an object of type [`Uint128`]. This is the total share of bGRAIN rewards that go to bGRAIN Paloma LPs.
 ///
-/// * **bluna_reward_global_index** is an object of type [`Decimal256`].
-/// This is an index tracking how many rewards have been distributed to bLUNA stakers.
+/// * **bgrain_reward_global_index** is an object of type [`Decimal256`].
+/// This is an index tracking how many rewards have been distributed to bGRAIN stakers.
 ///
-/// * **bluna_reward_user_index** is an object of type [`Option<Decimal256>`].
+/// * **bgrain_reward_user_index** is an object of type [`Option<Decimal256>`].
 /// This is an index tracking how many rewards have been claimed by the `user`.
 pub fn calc_user_reward(
     reward_balance: Uint128,
     previous_reward_balance: Uint128,
     user_share: Uint128,
     total_share: Uint128,
-    bluna_reward_global_index: cosmwasm_std::Decimal256,
-    bluna_reward_user_index: Option<cosmwasm_std::Decimal256>,
+    bgrain_reward_global_index: cosmwasm_std::Decimal256,
+    bgrain_reward_user_index: Option<cosmwasm_std::Decimal256>,
 ) -> Result<(cosmwasm_std::Decimal256, Uint128, Uint128), ContractError> {
     use cosmwasm_std::Decimal256;
 
     let latest_reward_amount = reward_balance.saturating_sub(previous_reward_balance);
 
-    let bluna_reward_global_index =
-        bluna_reward_global_index + Decimal256::from_ratio(latest_reward_amount, total_share);
+    let bgrain_reward_global_index =
+        bgrain_reward_global_index + Decimal256::from_ratio(latest_reward_amount, total_share);
 
-    let user_reward: Uint128 = if let Some(bluna_reward_user_index) = bluna_reward_user_index {
-        ((bluna_reward_global_index - bluna_reward_user_index) * Uint256::from(user_share))
+    let user_reward: Uint128 = if let Some(bgrain_reward_user_index) = bgrain_reward_user_index {
+        ((bgrain_reward_global_index - bgrain_reward_user_index) * Uint256::from(user_share))
             .try_into()
             .map_err(|e| ContractError::Std(StdError::from(e)))?
     } else if !user_share.is_zero() {
-        (bluna_reward_global_index * Uint256::from(user_share))
+        (bgrain_reward_global_index * Uint256::from(user_share))
             .try_into()
             .map_err(|e| ContractError::Std(StdError::from(e)))?
     } else {
         Uint128::zero()
     };
 
-    Ok((bluna_reward_global_index, latest_reward_amount, user_reward))
+    Ok((bgrain_reward_global_index, latest_reward_amount, user_reward))
 }

@@ -1,4 +1,4 @@
-# Astroport xASTRO Staking
+# Paloma xASTRO Staking
 
 This staking contract allows ASTRO holders to stake their tokens in exchange for xASTRO. The amount of ASTRO they can claim later increases as accrued fees in the Maker contract get swapped to ASTRO which is then sent to stakers.
 
@@ -11,7 +11,7 @@ Initializes the contract with the token code ID used by ASTRO and the ASTRO toke
 ```json
 {
   "token_code_id": 123,
-  "deposit_token_addr": "terra..."
+  "deposit_token_addr": "paloma..."
 }
 ```
 
@@ -24,7 +24,7 @@ CW20 receive msg.
 ```json
 {
   "receive": {
-    "sender": "terra...",
+    "sender": "paloma...",
     "amount": "123",
     "msg": "<base64_encoded_json_string>"
   }

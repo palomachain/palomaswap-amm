@@ -1,11 +1,11 @@
 use anyhow::Result;
-use astroport::{staking as xastro, token as astro};
 use astroport_governance::voting_escrow::{
     Cw20HookMsg, ExecuteMsg, InstantiateMsg, LockInfoResponse, QueryMsg, VotingPowerResponse,
 };
 use cosmwasm_std::{attr, to_binary, Addr, QueryRequest, StdResult, Uint128, WasmQuery};
 use cw20::{BalanceResponse, Cw20ExecuteMsg, Cw20QueryMsg, MinterResponse};
 use cw_multi_test::{App, AppResponse, ContractWrapper, Executor};
+use paloma::{staking as xastro, token as astro};
 
 pub const MULTIPLIER: u64 = 1000000;
 
@@ -21,9 +21,9 @@ pub struct EscrowHelper {
 impl EscrowHelper {
     pub fn init(router: &mut App, owner: Addr) -> Self {
         let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
-            astroport_token::contract::execute,
-            astroport_token::contract::instantiate,
-            astroport_token::contract::query,
+            paloma_token::contract::execute,
+            paloma_token::contract::instantiate,
+            paloma_token::contract::query,
         ));
 
         let astro_token_code_id = router.store_code(astro_token_contract);
@@ -53,11 +53,11 @@ impl EscrowHelper {
 
         let staking_contract = Box::new(
             ContractWrapper::new_with_empty(
-                astroport_staking::contract::execute,
-                astroport_staking::contract::instantiate,
-                astroport_staking::contract::query,
+                paloma_staking::contract::execute,
+                paloma_staking::contract::instantiate,
+                paloma_staking::contract::query,
             )
-            .with_reply_empty(astroport_staking::contract::reply),
+            .with_reply_empty(paloma_staking::contract::reply),
         );
 
         let staking_code_id = router.store_code(staking_contract);

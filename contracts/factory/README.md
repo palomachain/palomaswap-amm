@@ -1,19 +1,19 @@
-# Astroport Factory
+# Paloma Factory
 
-The factory contract can create new Astroport pair contracts (and associated LP token contracts) and it is used as a directory for all pairs. The default pair types are constant product and stableswap but governance may decide to add custom pools that can have any implementation.
+The factory contract can create new Paloma pair contracts (and associated LP token contracts) and it is used as a directory for all pairs. The default pair types are constant product and stableswap but governance may decide to add custom pools that can have any implementation.
 
 ---
 
 ## InstantiateMsg
 
-The instantiation message takes in the token code ID for the token type supported on Astroport. It also takes in the `fee_address` that collects fees for governance, the contract `owner`, the Generator contract address and the initial pair types available to create.
+The instantiation message takes in the token code ID for the token type supported on Paloma. It also takes in the `fee_address` that collects fees for governance, the contract `owner`, the Generator contract address and the initial pair types available to create.
 
 ```json
 {
   "token_code_id": 123,
-  "fee_address": "terra...",
-  "owner": "terra...",
-  "generator_address": "terra...",
+  "fee_address": "paloma...",
+  "owner": "paloma...",
+  "generator_address": "paloma...",
   "pair_configs": [{
       "code_id": 123,
       "pair_type": {
@@ -31,14 +31,14 @@ The instantiation message takes in the token code ID for the token type supporte
 
 ### `update_config`
 
-Updates contract variables, namely the code ID of the token implementation used in Astroport, the address that receives governance fees and the Generator contract address.
+Updates contract variables, namely the code ID of the token implementation used in Paloma, the address that receives governance fees and the Generator contract address.
 
 ```json
 {
   "update_config": {
     "token_code_id": 123,
-    "fee_address": "terra...",
-    "generator_address": "terra..."
+    "fee_address": "paloma...",
+    "generator_address": "paloma..."
   }
 }
 ```
@@ -78,7 +78,7 @@ As an example, let's say a pool charged 30bps (`total_fee_bps` is 30) and we wan
 
 ### `create_pair`
 
-Anyone can execute this function to create an Astroport pair. `CreatePair` creates both a `Pair` contract and a `LP(liquidity provider)` token contract. The account that instantiates the pair must specify the pair type they want as well as the assets for which the pool is created.
+Anyone can execute this function to create an Paloma pair. `CreatePair` creates both a `Pair` contract and a `LP(liquidity provider)` token contract. The account that instantiates the pair must specify the pair type they want as well as the assets for which the pool is created.
 
 Custom pool types may also need extra parameters which can be packed in `init_params`.
 
@@ -91,7 +91,7 @@ Custom pool types may also need extra parameters which can be packed in `init_pa
     "asset_infos": [
       {
         "token": {
-          "contract_addr": "terra..."
+          "contract_addr": "paloma..."
         }
       },
       {
@@ -115,7 +115,7 @@ Deregisters an already registered pair. This allows someone else to create a new
     "asset_infos": [
       {
         "token": {
-          "contract_address": "terra..."
+          "contract_address": "paloma..."
         }
       },
       {
@@ -135,7 +135,7 @@ Creates an offer to change the contract ownership. The validity period of the of
 ```json
 {
   "propose_new_owner": {
-    "owner": "terra...",
+    "owner": "paloma...",
     "expires_in": 1234567
   }
 }
@@ -169,7 +169,7 @@ Mark pairs as migrated.
 ```json
   {
     "mark_as_migrated": {
-      "pairs": ["terra...", "terra..."]
+      "pairs": ["paloma...", "paloma..."]
     }
   }
 ```
@@ -198,7 +198,7 @@ Returns information about a specific pair.
     "asset_infos": [
       {
         "token": {
-          "contract_address": "terra..."
+          "contract_address": "paloma..."
         }
       },
       {
@@ -221,7 +221,7 @@ Returns information about multiple pairs (the result is paginated). The function
     "start_after": [
       {
         "token": {
-          "contract_address": "terra..."
+          "contract_address": "paloma..."
         }
       },
       {

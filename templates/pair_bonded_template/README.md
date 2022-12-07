@@ -1,4 +1,4 @@
-# Astroport Pair Bonded Template
+# Paloma Pair Bonded Template
 
 Pair bonded template is an implementation of pair with bonded assets(e.g. ASTRO-xASTRO, MARS-xMARS, and other tokens that are correlated but have an increasing exchange rate compared to the other token).
 Use [Pair ASTRO-xASTRO](/contracts/pair_astro_xastro/) as example of template implementation.
@@ -10,16 +10,16 @@ Initialize the bonded pair contract.
 ```json
 {
   "token_code_id": 123,
-  "factory_addr": "terra...",
+  "factory_addr": "paloma...",
   "asset_infos": [
     {
       "token": {
-        "contract_addr": "terra..."
+        "contract_addr": "paloma..."
       }
     },
     {
       "token": {
-        "contract_addr": "terra..."
+        "contract_addr": "paloma..."
       }
     }
   ],
@@ -36,7 +36,7 @@ Allows to swap assets via 3rd party contract. Liquidity providing and withdrawin
 ```json
 {
   "receive": {
-    "sender": "terra...",
+    "sender": "paloma...",
     "amount": "123",
     "msg": "<base64_encoded_json_string>"
   }
@@ -61,14 +61,14 @@ Swap operation is not implemented in the template by default. You should
       "offer_asset": {
         "info": {
           "token": {
-            "contract_addr": "terra..."
+            "contract_addr": "paloma..."
           }
         },
         "amount": "123"
       },
       "belief_price": "123",
       "max_spread": "123",
-      "to": "terra..."
+      "to": "paloma..."
     }
   }
 ```
@@ -152,7 +152,7 @@ Reverse simulates a swap (specifies the ask instead of the offer) and returns th
     "ask_asset": {
       "info": {
         "token": {
-          "contract_addr": "terra..."
+          "contract_addr": "paloma..."
         }
       },
       "amount": "1000000"

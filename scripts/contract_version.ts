@@ -55,7 +55,7 @@ function changeLogExists(fileName: string, url: string): void {
     }
 }
 
-async function astroportTable(terra: LCDClient) {
+async function palomaTable(terra: LCDClient) {
     // download config file if does not exists
     changeLogExists(ASTROPORT_CHANGE_LOG_NAME, ASTROPORT_CHANGE_LOG_URL);
     let network = readArtifact(ASTROPORT_CHANGE_LOG_NAME);
@@ -75,7 +75,7 @@ async function astroportTable(terra: LCDClient) {
     }
 }
 
-async function astroport3dPartyTable(terra: LCDClient) {
+async function paloma3dPartyTable(terra: LCDClient) {
     // download config file if does not exists
     changeLogExists(ASTROPORT_3RD_PARTY_LOG_NAME, ASTROPORT_3RD_PARTY_LOG_URL);
     let network = readArtifact("3rd_party_phoenix")
@@ -103,8 +103,8 @@ async function main() {
     const network = readArtifact(terra.config.chainID)
     console.log('Network:', network)
 
-    await astroportTable(terra)
-    await astroport3dPartyTable(terra)
+    await palomaTable(terra)
+    await paloma3dPartyTable(terra)
 
 }
 

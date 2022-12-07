@@ -2,18 +2,18 @@ use crate::error::ContractError;
 use crate::migration::PRICE_LAST_V100;
 use crate::querier::{query_cumulative_prices, query_prices};
 use crate::state::{Config, PriceCumulativeLast, CONFIG, PRICE_LAST};
-use astroport::asset::{addr_validate_to_lower, Asset, AssetInfo};
-use astroport::oracle::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
-use astroport::pair::TWAP_PRECISION;
-use astroport::querier::{query_pair_info, query_token_precision};
 use cosmwasm_std::{
     entry_point, to_binary, Binary, Decimal256, Deps, DepsMut, Env, MessageInfo, Response,
     StdError, StdResult, Uint128, Uint256,
 };
 use cw2::{get_contract_version, set_contract_version};
+use paloma::asset::{addr_validate_to_lower, Asset, AssetInfo};
+use paloma::oracle::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
+use paloma::pair::TWAP_PRECISION;
+use paloma::querier::{query_pair_info, query_token_precision};
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "astroport-oracle";
+const CONTRACT_NAME: &str = "paloma-oracle";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -63,7 +63,7 @@ pub fn instantiate(
 /// Exposes all the execute functions available in the contract.
 ///
 /// ## Variants
-/// * **ExecuteMsg::Update {}** Updates the local TWAP values for the assets in the Astroport pool.
+/// * **ExecuteMsg::Update {}** Updates the local TWAP values for the assets in the Paloma pool.
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn execute(
     deps: DepsMut,
@@ -76,7 +76,7 @@ pub fn execute(
     }
 }
 
-/// Updates the local TWAP values for the tokens in the target Astroport pool.
+/// Updates the local TWAP values for the tokens in the target Paloma pool.
 pub fn update(deps: DepsMut, env: Env) -> Result<Response, ContractError> {
     let config = CONFIG.load(deps.storage)?;
     let price_last = PRICE_LAST.load(deps.storage)?;
@@ -188,7 +188,7 @@ pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> Result<Response, C
     let contract_version = get_contract_version(deps.storage)?;
 
     match contract_version.contract.as_ref() {
-        "astroport-oracle" => match contract_version.version.as_ref() {
+        "paloma-oracle" => match contract_version.version.as_ref() {
             "1.0.0" => {
                 let config = CONFIG.load(deps.storage)?;
                 let price_last_v100 = PRICE_LAST_V100.load(deps.storage)?;

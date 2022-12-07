@@ -6,8 +6,8 @@ use cw20::{BalanceResponse, Cw20ExecuteMsg, Cw20QueryMsg, Cw20ReceiveMsg};
 
 use crate::error::ContractError;
 use crate::state::{Config, CONFIG};
-use astroport::asset::addr_validate_to_lower;
-use astroport::generator_proxy::{
+use paloma::asset::addr_validate_to_lower;
+use paloma::generator_proxy::{
     CallbackMsg, ConfigResponse, Cw20HookMsg, ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg,
 };
 use cw2::set_contract_version;
@@ -17,7 +17,7 @@ use mirror_protocol::staking::{
 };
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "astroport-generator-proxy-to-mirror";
+const CONTRACT_NAME: &str = "paloma-generator-proxy-to-mirror";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 

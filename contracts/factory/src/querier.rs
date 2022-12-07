@@ -1,6 +1,6 @@
-use astroport::asset::PairInfo;
-use astroport::pair::QueryMsg;
 use cosmwasm_std::{QuerierWrapper, StdResult};
+use paloma::asset::PairInfo;
+use paloma::pair::QueryMsg;
 
 /// Returns information about a pair (using the [`PairInfo`] struct).
 ///

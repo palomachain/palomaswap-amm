@@ -1,6 +1,6 @@
 use crate::math::{MAX_AMP, MAX_AMP_CHANGE, MIN_AMP_CHANGING_TIME};
-use astroport::asset::MINIMUM_LIQUIDITY_AMOUNT;
 use cosmwasm_std::{CheckedMultiplyRatioError, ConversionOverflowError, OverflowError, StdError};
+use paloma::asset::MINIMUM_LIQUIDITY_AMOUNT;
 use thiserror::Error;
 
 /// This enum describes stableswap pair contract errors
@@ -73,7 +73,7 @@ pub enum ContractError {
     SameAssets {},
 
     #[error(
-        "Invalid number of assets. The Astroport supports at least 2 and at most 5 assets within a stable pool"
+        "Invalid number of assets. The Paloma supports at least 2 and at most 5 assets within a stable pool"
     )]
     InvalidNumberOfAssets {},
 

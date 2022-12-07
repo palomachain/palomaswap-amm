@@ -1,6 +1,6 @@
 use std::convert::TryFrom;
 
-use astroport::U256;
+use paloma::U256;
 
 const N_COINS_SQUARED: u8 = 4;
 const ITERATIONS: u8 = 32;

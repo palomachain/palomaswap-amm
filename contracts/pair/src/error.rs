@@ -1,5 +1,5 @@
-use astroport::asset::MINIMUM_LIQUIDITY_AMOUNT;
 use cosmwasm_std::{OverflowError, StdError};
+use paloma::asset::MINIMUM_LIQUIDITY_AMOUNT;
 use thiserror::Error;
 
 /// This enum describes pair contract errors

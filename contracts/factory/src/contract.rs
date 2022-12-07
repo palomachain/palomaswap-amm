@@ -14,25 +14,25 @@ use crate::state::{
 
 use crate::response::MsgInstantiateContractResponse;
 
-use astroport::asset::{addr_opt_validate, addr_validate_to_lower, AssetInfo, PairInfo};
-use astroport::factory::{
+use paloma::asset::{addr_opt_validate, addr_validate_to_lower, AssetInfo, PairInfo};
+use paloma::factory::{
     ConfigResponse, ExecuteMsg, FeeInfoResponse, InstantiateMsg, MigrateMsg, PairConfig, PairType,
     PairsResponse, QueryMsg, ROUTE,
 };
 
 use crate::migration::{migrate_pair_configs_to_v120, save_routes};
-use astroport::common::{
-    claim_ownership, drop_ownership_proposal, propose_new_owner, validate_addresses,
-};
-use astroport::generator::ExecuteMsg::DeactivatePool;
-use astroport::pair::InstantiateMsg as PairInstantiateMsg;
 use cw2::{get_contract_version, set_contract_version};
 use itertools::Itertools;
+use paloma::common::{
+    claim_ownership, drop_ownership_proposal, propose_new_owner, validate_addresses,
+};
+use paloma::generator::ExecuteMsg::DeactivatePool;
+use paloma::pair::InstantiateMsg as PairInstantiateMsg;
 use protobuf::Message;
 use std::collections::HashSet;
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "astroport-factory";
+const CONTRACT_NAME: &str = "paloma-factory";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 /// A `reply` call code ID used in a sub-message.
@@ -323,7 +323,7 @@ pub fn execute_create_pair(
                 init_params,
             })?,
             funds: vec![],
-            label: "Astroport pair".to_string(),
+            label: "Paloma pair".to_string(),
         }
         .into(),
         gas_limit: None,
@@ -475,10 +475,10 @@ pub fn deregister(
 /// ## Queries
 /// * **QueryMsg::Config {}** Returns general contract parameters using a custom [`ConfigResponse`] structure.
 ///
-/// * **QueryMsg::Pair { asset_infos }** Returns a [`PairInfo`] object with information about a specific Astroport pair.
+/// * **QueryMsg::Pair { asset_infos }** Returns a [`PairInfo`] object with information about a specific Paloma pair.
 ///
 /// * **QueryMsg::Pairs { start_after, limit }** Returns an array that contains items of type [`PairInfo`].
-/// This returns information about multiple Astroport pairs
+/// This returns information about multiple Paloma pairs
 ///
 /// * **QueryMsg::FeeInfo { pair_type }** Returns the fee structure (total and maker fees) for a specific pair type.
 ///
@@ -580,7 +580,7 @@ pub fn migrate(mut deps: DepsMut, _env: Env, msg: MigrateMsg) -> Result<Response
     let contract_version = get_contract_version(deps.storage)?;
 
     match contract_version.contract.as_ref() {
-        "astroport-factory" => match contract_version.version.as_ref() {
+        "paloma-factory" => match contract_version.version.as_ref() {
             "1.0.0" | "1.0.0-fix1" => {
                 let msg: migration::MigrationMsgV100 = from_binary(&msg.params)?;
 

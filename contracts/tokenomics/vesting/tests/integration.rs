@@ -1,15 +1,12 @@
-use astroport::vesting::{QueryMsg, VestingAccountResponse};
-use astroport::{
-    token::InstantiateMsg as TokenInstantiateMsg,
-    vesting::{
-        Cw20HookMsg, ExecuteMsg, InstantiateMsg, VestingAccount, VestingSchedule,
-        VestingSchedulePoint,
-    },
-};
-use astroport_vesting::state::Config;
 use cosmwasm_std::{to_binary, Addr, StdResult, Timestamp, Uint128};
 use cw20::{BalanceResponse, Cw20ExecuteMsg, Cw20QueryMsg, MinterResponse};
 use cw_multi_test::{App, ContractWrapper, Executor};
+use paloma::token::InstantiateMsg as TokenInstantiateMsg;
+use paloma::vesting::{
+    Cw20HookMsg, ExecuteMsg, InstantiateMsg, QueryMsg, VestingAccount, VestingAccountResponse,
+    VestingSchedule, VestingSchedulePoint,
+};
+use paloma_vesting::state::Config;
 
 const OWNER1: &str = "owner1";
 const USER1: &str = "user1";
@@ -459,9 +456,9 @@ fn mock_app() -> App {
 
 fn store_token_code(app: &mut App) -> u64 {
     let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
-        astroport_token::contract::execute,
-        astroport_token::contract::instantiate,
-        astroport_token::contract::query,
+        paloma_token::contract::execute,
+        paloma_token::contract::instantiate,
+        paloma_token::contract::query,
     ));
 
     app.store_code(astro_token_contract)
@@ -495,9 +492,9 @@ fn instantiate_token(app: &mut App, token_code_id: u64, name: &str, cap: Option<
 
 fn instantiate_vesting(mut app: &mut App, astro_token_instance: &Addr) -> Addr {
     let vesting_contract = Box::new(ContractWrapper::new_with_empty(
-        astroport_vesting::contract::execute,
-        astroport_vesting::contract::instantiate,
-        astroport_vesting::contract::query,
+        paloma_vesting::contract::execute,
+        paloma_vesting::contract::instantiate,
+        paloma_vesting::contract::query,
     ));
     let owner = Addr::unchecked(OWNER1);
     let vesting_code_id = app.store_code(vesting_contract);

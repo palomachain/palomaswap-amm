@@ -8,28 +8,28 @@ use cosmwasm_std::{
 };
 
 use crate::response::MsgInstantiateContractResponse;
-use astroport::asset::{
+use cw2::set_contract_version;
+use cw20::{Cw20ExecuteMsg, Cw20ReceiveMsg, MinterResponse};
+use paloma::asset::{
     addr_opt_validate, addr_validate_to_lower, check_swap_parameters, format_lp_token_name, Asset,
     AssetInfo, PairInfo, MINIMUM_LIQUIDITY_AMOUNT,
 };
-use astroport::decimal2decimal256;
-use astroport::factory::PairType;
-use astroport::generator::Cw20HookMsg as GeneratorHookMsg;
-use astroport::pair::{migration_check, ConfigResponse, DEFAULT_SLIPPAGE, MAX_ALLOWED_SLIPPAGE};
-use astroport::pair::{
+use paloma::decimal2decimal256;
+use paloma::factory::PairType;
+use paloma::generator::Cw20HookMsg as GeneratorHookMsg;
+use paloma::pair::{migration_check, ConfigResponse, DEFAULT_SLIPPAGE, MAX_ALLOWED_SLIPPAGE};
+use paloma::pair::{
     CumulativePricesResponse, Cw20HookMsg, ExecuteMsg, InstantiateMsg, MigrateMsg, PoolResponse,
     QueryMsg, ReverseSimulationResponse, SimulationResponse, TWAP_PRECISION,
 };
-use astroport::querier::{query_factory_config, query_fee_info, query_supply};
-use astroport::{token::InstantiateMsg as TokenInstantiateMsg, U256};
-use cw2::set_contract_version;
-use cw20::{Cw20ExecuteMsg, Cw20ReceiveMsg, MinterResponse};
+use paloma::querier::{query_factory_config, query_fee_info, query_supply};
+use paloma::{token::InstantiateMsg as TokenInstantiateMsg, U256};
 use protobuf::Message;
 use std::str::FromStr;
 use std::vec;
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "astroport-pair";
+const CONTRACT_NAME: &str = "paloma-pair";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 /// A `reply` call code ID used for sub-messages.
@@ -90,7 +90,7 @@ pub fn instantiate(
             })?,
             funds: vec![],
             admin: None,
-            label: String::from("Astroport LP token"),
+            label: String::from("Paloma LP token"),
         }
         .into(),
         id: INSTANTIATE_TOKEN_REPLY_ID,

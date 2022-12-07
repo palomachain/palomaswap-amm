@@ -11,7 +11,7 @@ const MAX_MAKER_FEE_BPS: u16 = 10_000;
 /// This enum describes available pair types.
 /// ## Available pool types
 /// ```
-/// # use astroport::factory::PairType::{Custom, Stable, Xyk};
+/// # use paloma::factory::PairType::{Custom, Stable, Xyk};
 /// Xyk {};
 /// Stable {};
 /// Custom(String::from("Custom"));
@@ -76,7 +76,7 @@ pub struct InstantiateMsg {
     pub generator_address: Option<String>,
     /// Address of owner that is allowed to change factory contract parameters
     pub owner: String,
-    /// CW1 whitelist contract code id used to store 3rd party rewards for staking Astroport LP tokens
+    /// CW1 whitelist contract code id used to store 3rd party rewards for staking Paloma LP tokens
     pub whitelist_code_id: u64,
 }
 
@@ -89,9 +89,9 @@ pub enum ExecuteMsg {
         token_code_id: Option<u64>,
         /// Contract address to send governance fees to (the Maker)
         fee_address: Option<String>,
-        /// Contract address where Lp tokens can be auto_staked after someone provides liquidity in an incentivized Astroport pool
+        /// Contract address where Lp tokens can be auto_staked after someone provides liquidity in an incentivized Paloma pool
         generator_address: Option<String>,
-        /// CW1 whitelist contract code id used to store 3rd party rewards for staking Astroport LP tokens
+        /// CW1 whitelist contract code id used to store 3rd party rewards for staking Paloma LP tokens
         whitelist_code_id: Option<u64>,
     },
     /// UpdatePairConfig updates the config for a pair type.
@@ -175,9 +175,9 @@ pub struct ConfigResponse {
     pub token_code_id: u64,
     /// Address of contract to send governance fees to (the Maker)
     pub fee_address: Option<Addr>,
-    /// Address of contract used to auto_stake LP tokens for Astroport pairs that are incentivized
+    /// Address of contract used to auto_stake LP tokens for Paloma pairs that are incentivized
     pub generator_address: Option<Addr>,
-    /// CW1 whitelist contract code id used to store 3rd party rewards for staking Astroport LP tokens
+    /// CW1 whitelist contract code id used to store 3rd party rewards for staking Paloma LP tokens
     pub whitelist_code_id: u64,
 }
 

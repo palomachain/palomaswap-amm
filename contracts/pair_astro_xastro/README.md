@@ -1,6 +1,6 @@
-# Astroport ASTRO-xASTRO pair
+# Paloma ASTRO-xASTRO pair
 
-This pool is implementation of pair bonded template. It allows to process ASTRO-xASTRO swap operations via Astroport Staking.
+This pool is implementation of pair bonded template. It allows to process ASTRO-xASTRO swap operations via Paloma Staking.
 
 ---
 
@@ -11,16 +11,16 @@ Initializes a new stableswap pair.
 ```json
 {
   "token_code_id": 123,
-  "factory_addr": "terra...",
+  "factory_addr": "paloma...",
   "asset_infos": [
     {
       "token": {
-        "contract_addr": "terra..."
+        "contract_addr": "paloma..."
       }
     },
     {
       "token": {
-        "contract_addr": "terra..."
+        "contract_addr": "paloma..."
       }
     }
   ],
@@ -32,9 +32,9 @@ Init params(should be base64 encoded)
 
 ```json
 {
-  "astro_addr": "terra...",
-  "xastro_addr": "terra...",
-  "staking_addr": "terra..."
+  "astro_addr": "paloma...",
+  "xastro_addr": "paloma...",
+  "staking_addr": "paloma..."
 }
 ```
 
@@ -42,7 +42,7 @@ Init params(should be base64 encoded)
 
 ### `swap`
 
-Perform a swap via Astroport Staking contract.
+Perform a swap via Paloma Staking contract.
 
 ```json
   {
@@ -50,14 +50,14 @@ Perform a swap via Astroport Staking contract.
       "offer_asset": {
         "info": {
           "native_token": {
-            "denom": "uluna"
+            "denom": "ugrain"
           }
         },
         "amount": "123"
       },
       "belief_price": "123",
       "max_spread": "123",
-      "to": "terra..."
+      "to": "paloma..."
     }
   }
 ```
@@ -92,7 +92,7 @@ Reverse simulates a swap (specifies the ask instead of the offer) and returns th
     "ask_asset": {
       "info": {
         "token": {
-          "contract_addr": "terra..."
+          "contract_addr": "paloma..."
         }
       },
       "amount": "1000000"

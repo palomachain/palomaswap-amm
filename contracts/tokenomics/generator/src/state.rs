@@ -1,18 +1,16 @@
-use astroport::asset::{addr_validate_to_lower, AssetInfo};
-use astroport::common::OwnershipProposal;
-use astroport::restricted_vector::RestrictedVector;
-use astroport::DecimalCheckedOps;
-use astroport::{
-    generator::{PoolInfo, UserInfo, UserInfoV2},
-    generator_proxy::QueryMsg as ProxyQueryMsg,
-};
 use astroport_governance::voting_escrow::{get_total_voting_power, get_voting_power};
 use astroport_governance::voting_escrow_delegation::get_adjusted_balance;
 use cosmwasm_std::{Addr, Decimal, DepsMut, QuerierWrapper, StdResult, Storage, Uint128};
+use paloma::asset::{addr_validate_to_lower, AssetInfo};
+use paloma::common::OwnershipProposal;
+use paloma::generator::{PoolInfo, UserInfo, UserInfoV2};
+use paloma::generator_proxy::QueryMsg as ProxyQueryMsg;
+use paloma::restricted_vector::RestrictedVector;
+use paloma::DecimalCheckedOps;
 
-use astroport::generator::Config;
 use cw20::BalanceResponse;
 use cw_storage_plus::{Item, Map};
+use paloma::generator::Config;
 
 use std::collections::HashMap;
 
@@ -142,9 +140,9 @@ pub fn accumulate_pool_proxy_rewards(
 /// Saves map between a proxy and an asset info if it is not saved yet.
 pub fn update_proxy_asset(deps: DepsMut, proxy_addr: &Addr) -> StdResult<()> {
     if !PROXY_REWARD_ASSET.has(deps.storage, proxy_addr) {
-        let proxy_cfg: astroport::generator_proxy::ConfigResponse = deps
+        let proxy_cfg: paloma::generator_proxy::ConfigResponse = deps
             .querier
-            .query_wasm_smart(proxy_addr, &astroport::generator_proxy::QueryMsg::Config {})?;
+            .query_wasm_smart(proxy_addr, &paloma::generator_proxy::QueryMsg::Config {})?;
         let asset = AssetInfo::Token {
             contract_addr: addr_validate_to_lower(deps.api, &proxy_cfg.reward_token_addr)?,
         };

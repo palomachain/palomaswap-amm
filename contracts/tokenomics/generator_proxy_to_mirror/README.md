@@ -1,4 +1,4 @@
-# Astroport Generator Proxy for Mirror Protocol Staking Rewards
+# Paloma Generator Proxy for Mirror Protocol Staking Rewards
 
 This generator proxy contract interacts with the MIR-UST staking contract. Stake and rewards based on locked LP token amount by liquidity pool providers (dual rewards feature). For a diagram of how dual reward proxies work, you can take a look [here](https://miro.medium.com/max/1400/0*8hn2NSnZJZTa9YGV).
 
@@ -10,11 +10,11 @@ Initializes the proxy contract with required addresses (generator, LP token to s
 
 ```json
 {
-  "generator_contract_addr": "terra...",
-  "pair_addr": "terra...",
-  "lp_token_addr": "terra...",
-  "reward_contract_addr": "terra...",
-  "reward_token_addr": "terra..."
+  "generator_contract_addr": "paloma...",
+  "pair_addr": "paloma...",
+  "lp_token_addr": "paloma...",
+  "reward_contract_addr": "paloma...",
+  "reward_token_addr": "paloma..."
 }
 ```
 
@@ -27,7 +27,7 @@ CW20 receive msg.
 ```json
 {
   "receive": {
-    "sender": "terra...",
+    "sender": "paloma...",
     "amount": "123",
     "msg": "<base64_encoded_json_string>"
   }
@@ -51,7 +51,7 @@ Sends accrued token rewards to a specific account.
 ```json
 {
   "send_rewards": {
-    "account": "terra...",
+    "account": "paloma...",
     "amount": "123"
   }
 }
@@ -64,7 +64,7 @@ Withdraws LP tokens alongside any outstanding token rewards and sends them to th
 ```json
 {
   "withdraw": {
-    "account": "terra...",
+    "account": "paloma...",
     "amount": "123"
   }
 }
@@ -77,7 +77,7 @@ Unstake LP tokens without caring about accrued rewards.
 ```json
 {
   "emergency_withdraw": {
-    "account": "terra...",
+    "account": "paloma...",
     "amount": "123"
   }
 }
@@ -93,7 +93,7 @@ One example is for transferring LP tokens after a withdrawal from the 3rd party 
 {
   "callback": {
     "transfer_lp_tokens_after_withdraw": {
-      "account": "terra...",
+      "account": "paloma...",
       "prev_lp_balance": "1234"
     }
   }

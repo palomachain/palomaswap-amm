@@ -1,6 +1,6 @@
-# Astroport Router
+# Paloma Router
 
-The Router contract contains logic to facilitate multi-hop swaps for Terra native & Astroport tokens.
+The Router contract contains logic to facilitate multi-hop swaps for Paloma native & Paloma tokens.
 
 ---
 
@@ -10,11 +10,11 @@ For every swap, the contract checks if the resulting token is the one that was a
 
 ## InstantiateMsg
 
-Initializes the contract with the Astroport factory contract address.
+Initializes the contract with the Paloma factory contract address.
 
 ```json
 {
-  "astroport_factory": "terra..."
+  "paloma_factory": "paloma..."
 }
 ```
 
@@ -27,7 +27,7 @@ CW20 receive msg.
 ```json
 {
   "receive": {
-    "sender": "terra...",
+    "sender": "paloma...",
     "amount": "123",
     "msg": "<base64_encoded_json_string>"
   }
@@ -36,7 +36,7 @@ CW20 receive msg.
 
 ### `execute_swap_operation`
 
-Swaps one token to another. _single_ defines whether this swap is single or part of a multi hop route. 
+Swaps one token to another. _single_ defines whether this swap is single or part of a multi hop route.
 This message is for internal use.
 
 ### Example
@@ -55,12 +55,12 @@ Swap UST => mABNB
           },
           "ask_asset_info": {
             "token": {
-              "contract_addr": "terra..."
+              "contract_addr": "paloma..."
             }
           }
         }
       },
-     "to": "terra...",
+     "to": "paloma...",
      "max_spread": "0.05",
      "single": false
    }
@@ -69,7 +69,7 @@ Swap UST => mABNB
 
 ### `execute_swap_operations`
 
-Performs multi-hop swap operations for native & Astroport tokens. Swaps execute one-by-one and the last swap will return the ask token. This function is public (can be called by anyone).
+Performs multi-hop swap operations for native & Paloma tokens. Swaps execute one-by-one and the last swap will return the ask token. This function is public (can be called by anyone).
 
 ### Example
 
@@ -94,14 +94,14 @@ Swap KRT => UST => mABNB
           },
           "ask_asset_info": {
             "token": {
-              "contract_addr": "terra..."
+              "contract_addr": "paloma..."
             }
           }
         }
       }
     ],
     "minimum_receive": "123",
-    "to": "terra...",
+    "to": "paloma...",
     "max_spread": "0.05"
   }
 }
@@ -116,12 +116,12 @@ Checks that an amount of ask tokens exceeds `minimum_receive`. This message is f
   "assert_minimum_receive": {
     "asset_info": {
       "token": {
-        "contract_addr": "terra..."
+        "contract_addr": "paloma..."
       }
     },
     "prev_balance": "123",
     "minimum_receive": "123",
-    "receiver": "terra..."
+    "receiver": "paloma..."
   }
 }
 ```
@@ -166,7 +166,7 @@ Simulates multi-hop swap operations. Examples:
           },
           "ask_asset_info": {
             "token": {
-              "contract_addr": "terra..."
+              "contract_addr": "paloma..."
             }
           }
         }
@@ -193,7 +193,7 @@ Simulates multi-hop swap operations. Examples:
       "astro_swap": {
         "offer_asset_info": {
           "token": {
-            "contract_addr": "terra..."
+            "contract_addr": "paloma..."
           }
         },
         "ask_asset_info": {

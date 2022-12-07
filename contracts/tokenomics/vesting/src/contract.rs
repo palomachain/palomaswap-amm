@@ -6,17 +6,17 @@ use cosmwasm_std::{
 use crate::state::{read_vesting_infos, Config, CONFIG, OWNERSHIP_PROPOSAL, VESTING_INFO};
 
 use crate::error::ContractError;
-use astroport::asset::{addr_opt_validate, addr_validate_to_lower};
-use astroport::common::{claim_ownership, drop_ownership_proposal, propose_new_owner};
-use astroport::vesting::{
+use cw2::set_contract_version;
+use cw20::{Cw20ExecuteMsg, Cw20ReceiveMsg};
+use paloma::asset::{addr_opt_validate, addr_validate_to_lower};
+use paloma::common::{claim_ownership, drop_ownership_proposal, propose_new_owner};
+use paloma::vesting::{
     ConfigResponse, Cw20HookMsg, ExecuteMsg, InstantiateMsg, MigrateMsg, OrderBy, QueryMsg,
     VestingAccount, VestingAccountResponse, VestingAccountsResponse, VestingInfo, VestingSchedule,
 };
-use cw2::set_contract_version;
-use cw20::{Cw20ExecuteMsg, Cw20ReceiveMsg};
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "astroport-vesting";
+const CONTRACT_NAME: &str = "paloma-vesting";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 

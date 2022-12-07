@@ -10,8 +10,8 @@ pub const MAX_SWAP_OPERATIONS: usize = 50;
 /// This structure holds the parameters used for creating a contract.
 #[cw_serde]
 pub struct InstantiateMsg {
-    /// The astroport factory contract address
-    pub astroport_factory: String,
+    /// The paloma factory contract address
+    pub paloma_factory: String,
 }
 
 /// This enum describes a swap operation.
@@ -109,8 +109,8 @@ pub enum QueryMsg {
 /// This structure describes a custom struct to return a query response containing the base contract configuration.
 #[cw_serde]
 pub struct ConfigResponse {
-    /// The Astroport factory contract address
-    pub astroport_factory: String,
+    /// The Paloma factory contract address
+    pub paloma_factory: String,
 }
 
 /// This structure describes a custom struct to return a query response containing the end amount of a swap simulation

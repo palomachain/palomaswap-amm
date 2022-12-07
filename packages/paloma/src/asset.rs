@@ -15,12 +15,12 @@ use itertools::Itertools;
 
 /// UST token denomination
 pub const UUSD_DENOM: &str = "uusd";
-/// LUNA token denomination
-pub const ULUNA_DENOM: &str = "uluna";
+/// GRAIN token denomination
+pub const UGRAIN_DENOM: &str = "ugrain";
 /// Minimum initial LP share
 pub const MINIMUM_LIQUIDITY_AMOUNT: Uint128 = Uint128::new(1_000);
 
-/// This enum describes a Terra asset (native or CW20).
+/// This enum describes a paloma asset (native or CW20).
 #[cw_serde]
 pub struct Asset {
     /// Information about an asset stored in a [`AssetInfo`] struct
@@ -128,9 +128,9 @@ impl Asset {
 /// ## Examples
 /// ```
 /// # use cosmwasm_std::Addr;
-/// # use astroport::asset::AssetInfo::{NativeToken, Token};
+/// # use paloma::asset::AssetInfo::{NativeToken, Token};
 /// Token { contract_addr: Addr::unchecked("stake...") };
-/// NativeToken { denom: String::from("uluna") };
+/// NativeToken { denom: String::from("ugrain") };
 /// ```
 #[cw_serde]
 #[derive(Hash, Eq)]
@@ -236,7 +236,7 @@ impl AssetInfo {
     }
 }
 
-/// This structure stores the main parameters for an Astroport pair
+/// This structure stores the main parameters for an Paloma pair
 #[cw_serde]
 pub struct PairInfo {
     /// Asset information for the assets in the pool

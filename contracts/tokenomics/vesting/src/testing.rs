@@ -1,5 +1,5 @@
 use crate::contract::{instantiate, query};
-use astroport::vesting::{ConfigResponse, InstantiateMsg, QueryMsg};
+use paloma::vesting::{ConfigResponse, InstantiateMsg, QueryMsg};
 
 use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
 use cosmwasm_std::{from_binary, Addr};

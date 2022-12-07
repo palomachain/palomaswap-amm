@@ -1,6 +1,6 @@
 use cosmwasm_schema::write_api;
 
-use astroport::generator_proxy::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
+use paloma::generator_proxy::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
 
 fn main() {
     write_api! {

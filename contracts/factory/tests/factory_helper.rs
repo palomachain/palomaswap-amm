@@ -1,9 +1,9 @@
 use anyhow::Result as AnyResult;
-use astroport::asset::{AssetInfo, PairInfo};
-use astroport::factory::{PairConfig, PairType, QueryMsg};
 use cosmwasm_std::{Addr, Binary};
 use cw20::MinterResponse;
 use cw_multi_test::{App, AppResponse, ContractWrapper, Executor};
+use paloma::asset::{AssetInfo, PairInfo};
+use paloma::factory::{PairConfig, PairType, QueryMsg};
 
 pub struct FactoryHelper {
     pub owner: Addr,
@@ -15,14 +15,14 @@ pub struct FactoryHelper {
 impl FactoryHelper {
     pub fn init(router: &mut App, owner: &Addr) -> Self {
         let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
-            astroport_token::contract::execute,
-            astroport_token::contract::instantiate,
-            astroport_token::contract::query,
+            paloma_token::contract::execute,
+            paloma_token::contract::instantiate,
+            paloma_token::contract::query,
         ));
 
         let cw20_token_code_id = router.store_code(astro_token_contract);
 
-        let msg = astroport::token::InstantiateMsg {
+        let msg = paloma::token::InstantiateMsg {
             name: String::from("Astro token"),
             symbol: String::from("ASTRO"),
             decimals: 6,
@@ -47,27 +47,27 @@ impl FactoryHelper {
 
         let pair_contract = Box::new(
             ContractWrapper::new_with_empty(
-                astroport_pair::contract::execute,
-                astroport_pair::contract::instantiate,
-                astroport_pair::contract::query,
+                paloma_pair::contract::execute,
+                paloma_pair::contract::instantiate,
+                paloma_pair::contract::query,
             )
-            .with_reply_empty(astroport_pair::contract::reply),
+            .with_reply_empty(paloma_pair::contract::reply),
         );
 
         let pair_code_id = router.store_code(pair_contract);
 
         let factory_contract = Box::new(
             ContractWrapper::new_with_empty(
-                astroport_factory::contract::execute,
-                astroport_factory::contract::instantiate,
-                astroport_factory::contract::query,
+                paloma_factory::contract::execute,
+                paloma_factory::contract::instantiate,
+                paloma_factory::contract::query,
             )
-            .with_reply_empty(astroport_factory::contract::reply),
+            .with_reply_empty(paloma_factory::contract::reply),
         );
 
         let factory_code_id = router.store_code(factory_contract);
 
-        let msg = astroport::factory::InstantiateMsg {
+        let msg = paloma::factory::InstantiateMsg {
             pair_configs: vec![PairConfig {
                 code_id: pair_code_id,
                 pair_type: PairType::Xyk {},
@@ -111,7 +111,7 @@ impl FactoryHelper {
         generator_address: Option<String>,
         whitelist_code_id: Option<u64>,
     ) -> AnyResult<AppResponse> {
-        let msg = astroport::factory::ExecuteMsg::UpdateConfig {
+        let msg = paloma::factory::ExecuteMsg::UpdateConfig {
             token_code_id,
             fee_address,
             generator_address,
@@ -138,7 +138,7 @@ impl FactoryHelper {
             },
         ];
 
-        let msg = astroport::factory::ExecuteMsg::CreatePair {
+        let msg = paloma::factory::ExecuteMsg::CreatePair {
             pair_type,
             asset_infos,
             init_params,
@@ -184,7 +184,7 @@ pub fn instantiate_token(
     token_name: &str,
     decimals: Option<u8>,
 ) -> Addr {
-    let init_msg = astroport::token::InstantiateMsg {
+    let init_msg = paloma::token::InstantiateMsg {
         name: token_name.to_string(),
         symbol: token_name.to_string(),
         decimals: decimals.unwrap_or(6),

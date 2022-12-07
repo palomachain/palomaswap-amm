@@ -1,5 +1,5 @@
-use astroport::asset::AssetInfo;
 use cosmwasm_std::{DivideByZeroError, OverflowError, StdError};
+use paloma::asset::AssetInfo;
 use thiserror::Error;
 
 /// This enum describes maker contract errors
