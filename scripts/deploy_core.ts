@@ -8,7 +8,7 @@ import {
     uploadContract, instantiateContract, queryContract, toEncodedBinary,
 } from './helpers.js'
 import { join } from 'path'
-import { LCDClient } from '@terra-money/terra.js';
+import { LCDClient } from '@palomachain/paloma.js';
 import { chainConfigs } from "./types.d/chain_configs.js";
 import { strictEqual } from "assert";
 
@@ -81,17 +81,22 @@ async function uploadAndInitToken(terra: LCDClient, wallet: any) {
 async function uploadPairContracts(terra: LCDClient, wallet: any) {
     let network = readArtifact(terra.config.chainID)
 
+    console.log('network.pairCodeID', network.pairCodeID);
     if (!network.pairCodeID) {
         console.log('Register Pair Contract...')
         network.pairCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair.wasm')!)
         writeArtifact(network, terra.config.chainID)
     }
 
-    if (!network.pairStableCodeID) {
-        console.log('Register Stable Pair Contract...')
-        network.pairStableCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair_stable.wasm')!)
-        writeArtifact(network, terra.config.chainID)
-    }
+    /**
+     * ToDo
+     * Not able to deploy stablePair due to the contract size is too large
+     */
+    //if (!network.pairStableCodeID) {
+    //    console.log('Register Stable Pair Contract...')
+    //    network.pairStableCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair_stable.wasm')!)
+    //    writeArtifact(network, terra.config.chainID)
+    //}
 }
 
 async function uploadAndInitStaking(terra: LCDClient, wallet: any) {
@@ -138,7 +143,7 @@ async function uploadAndInitFactory(terra: LCDClient, wallet: any) {
     if (!network.factoryAddress) {
         console.log('Deploying Factory...')
         console.log(`CodeId Pair Contract: ${network.pairCodeID}`)
-        console.log(`CodeId Stable Pair Contract: ${network.pairStableCodeID}`)
+        //console.log(`CodeId Stable Pair Contract: ${network.pairStableCodeID}`)
 
         for (let i = 0; i < chainConfigs.factory.initMsg.pair_configs.length; i++) {
             if (!chainConfigs.factory.initMsg.pair_configs[i].code_id) {
@@ -146,9 +151,13 @@ async function uploadAndInitFactory(terra: LCDClient, wallet: any) {
                     chainConfigs.factory.initMsg.pair_configs[i].code_id ||= network.pairCodeID;
                 }
 
-                if (JSON.stringify(chainConfigs.factory.initMsg.pair_configs[i].pair_type) === JSON.stringify({ stable: {} })) {
-                    chainConfigs.factory.initMsg.pair_configs[i].code_id ||= network.pairStableCodeID;
-                }
+                /**
+                 * ToDo:
+                 * Disable stablePair initialize temporarily
+                 */
+                // if (JSON.stringify(chainConfigs.factory.initMsg.pair_configs[i].pair_type) === JSON.stringify({ stable: {} })) {
+                //     chainConfigs.factory.initMsg.pair_configs[i].code_id ||= network.pairStableCodeID;
+                // }
             }
         }
 

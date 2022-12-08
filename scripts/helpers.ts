@@ -4,7 +4,7 @@ import {
     Coins,
     isTxError,
     LCDClient,
-    LocalTerra,
+    // LocalTerra,
     MnemonicKey,
     Msg,
     MsgExecuteContract,
@@ -13,7 +13,8 @@ import {
     MsgStoreCode,
     MsgUpdateContractAdmin, Tx,
     Wallet
-} from '@terra-money/terra.js';
+} from '@palomachain/paloma.js';
+
 import {
     readFileSync,
     writeFileSync,
@@ -21,7 +22,7 @@ import {
 import path from 'path'
 import { CustomError } from 'ts-custom-error'
 
-import { APIParams } from "@terra-money/terra.js/dist/client/lcd/APIRequester";
+import { APIParams } from "@palomachain/paloma.js/dist/client/lcd/APIRequester";
 import fs from "fs";
 import https from "https";
 
@@ -51,7 +52,7 @@ export function readArtifact(name: string = 'artifact', from: string = ARTIFACTS
 
 export interface Client {
     wallet: Wallet
-    terra: LCDClient | LocalTerra
+    terra: LCDClient
 }
 
 export function newClient(): Client {
@@ -62,9 +63,6 @@ export function newClient(): Client {
             chainID: String(process.env.CHAIN_ID)
         })
         client.wallet = recover(client.terra, process.env.WALLET)
-    } else {
-        client.terra = new LocalTerra()
-        client.wallet = (client.terra as LocalTerra).wallets.test1
     }
     return client
 }
@@ -101,7 +99,7 @@ export class TransactionError extends CustomError {
 }
 
 export async function createTransaction(wallet: Wallet, msg: Msg) {
-    return await wallet.createAndSignTx({ msgs: [msg] })
+    return await wallet.createAndSignTx({ msgs: [msg], timeoutHeight: 0 })
 }
 
 export async function broadcastTransaction(terra: LCDClient, signedTx: Tx) {
