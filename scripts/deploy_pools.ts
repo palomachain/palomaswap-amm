@@ -9,7 +9,7 @@ import {
     toEncodedBinary, ARTIFACTS_PATH,
 } from './helpers.js'
 import { join } from 'path'
-import { LCDClient } from "@terra-money/terra.js";
+import { LCDClient } from "@palomachain/paloma.js";
 import { chainConfigs } from "./types.d/chain_configs.js";
 
 async function uploadAndInitOracle(terra: LCDClient, wallet: any, pair: Pair, network: any, pool_pair_key: string) {

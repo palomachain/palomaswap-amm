@@ -11,7 +11,7 @@ import {
     AstroSwap,
     performTransaction
 } from "../helpers.js"
-import {LCDClient, Coin, MsgExecuteContract, Numeric, Coins} from '@terra-money/terra.js';
+import {LCDClient, Coin, MsgExecuteContract, Numeric, Coins} from '@palomachain/paloma.js';
 import util from 'util';
 
 export class Astroport {

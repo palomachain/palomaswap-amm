@@ -9,7 +9,7 @@ import {
     AstroSwap
 } from "../helpers.js"
 import util from "util";
-import {Coin } from "@terra-money/terra.js";
+import {Coin } from "@palomachain/paloma.js";
 
 async function main() {
     const cl = newClient()
