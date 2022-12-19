@@ -1,10 +1,10 @@
-# Paloma Core
+# Palomaswap Core
 
 [![codecov](https://codecov.io/gh/astroport-fi/astroport-core/branch/main/graph/badge.svg?token=ROOLZTGZMM)](https://codecov.io/gh/paloma-fi/paloma-core)
 
-Multi pool type automated market-maker (AMM) protocol powered by smart contracts on the [Paloma](https://www.palomachain.com/) blockchain.
+Multi pool type automated market-maker (AMM) protocol powered by smart contracts on the [Paloma](https://www.palomachain.com/) blockchain. This AMM is a fork of the Astroport AMM codebase and aims to integrate and allow cross-AMM trade execution with Astroport at launch.
 
-## Contracts diagram
+## Contracts diagram (baed on Astroport)
 
 ![contract diagram](./assets/sc_diagram.png "Contracts Diagram")
 
