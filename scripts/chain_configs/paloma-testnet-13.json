@@ -179,7 +179,7 @@
     },
     "label": "Paloma Oracle"
   },
-  "create_pairs": {
+  "createPairs": {
     "pairs": []
   }
 }

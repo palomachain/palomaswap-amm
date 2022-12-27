@@ -152,7 +152,10 @@ export async function queryContractRaw(terra: LCDClient, end_point: string, para
 }
 
 export async function deployContract(terra: LCDClient, wallet: Wallet, admin_address: string, filepath: string, initMsg: object, label: string) {
-    const codeId = await uploadContract(terra, wallet, filepath);
+    // XXX: Hardcode a value for now.
+    //     RPC error -32600 - Invalid Request: error reading request body: http: request body too large
+    // const codeId = await uploadContract(terra, wallet, filepath);
+    const codeId = 45
     return await instantiateContract(terra, wallet, admin_address, codeId, initMsg, label);
 }
 

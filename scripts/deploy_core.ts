@@ -88,15 +88,14 @@ async function uploadPairContracts(terra: LCDClient, wallet: any) {
         writeArtifact(network, terra.config.chainID)
     }
 
-    /**
-     * ToDo
-     * Not able to deploy stablePair due to the contract size is too large
-     */
-    //if (!network.pairStableCodeID) {
-    //    console.log('Register Stable Pair Contract...')
-    //    network.pairStableCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair_stable.wasm')!)
-    //    writeArtifact(network, terra.config.chainID)
-    //}
+    if (!network.pairStableCodeID) {
+        console.log('Register Stable Pair Contract...')
+        // XXX: Contract is too large for RPC (???), hardcode a previously uploaded contract.
+        //     RPC error -32600 - Invalid Request: error reading request body: http: request body too large
+        //network.pairStableCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair_stable.wasm')!)
+        network.pairStableCodeID = 40
+        writeArtifact(network, terra.config.chainID)
+    }
 }
 
 async function uploadAndInitStaking(terra: LCDClient, wallet: any) {
@@ -143,7 +142,7 @@ async function uploadAndInitFactory(terra: LCDClient, wallet: any) {
     if (!network.factoryAddress) {
         console.log('Deploying Factory...')
         console.log(`CodeId Pair Contract: ${network.pairCodeID}`)
-        //console.log(`CodeId Stable Pair Contract: ${network.pairStableCodeID}`)
+        console.log(`CodeId Stable Pair Contract: ${network.pairStableCodeID}`)
 
         for (let i = 0; i < chainConfigs.factory.initMsg.pair_configs.length; i++) {
             if (!chainConfigs.factory.initMsg.pair_configs[i].code_id) {
@@ -151,13 +150,10 @@ async function uploadAndInitFactory(terra: LCDClient, wallet: any) {
                     chainConfigs.factory.initMsg.pair_configs[i].code_id ||= network.pairCodeID;
                 }
 
-                /**
-                 * ToDo:
-                 * Disable stablePair initialize temporarily
-                 */
-                // if (JSON.stringify(chainConfigs.factory.initMsg.pair_configs[i].pair_type) === JSON.stringify({ stable: {} })) {
-                //     chainConfigs.factory.initMsg.pair_configs[i].code_id ||= network.pairStableCodeID;
-                // }
+                // XXX: Nothing wrong here, just tagging this as the other spot we need to handle the stable pair contract.
+                if (JSON.stringify(chainConfigs.factory.initMsg.pair_configs[i].pair_type) === JSON.stringify({ stable: {} })) {
+                    chainConfigs.factory.initMsg.pair_configs[i].code_id ||= network.pairStableCodeID;
+                }
             }
         }
 
