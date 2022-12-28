@@ -18,4 +18,3 @@ target/
 /scripts/node_modules/
 #/scripts/package-lock.json
 /artifacts/
-/contracts/**/schema/
