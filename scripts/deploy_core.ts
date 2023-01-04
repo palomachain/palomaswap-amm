@@ -8,7 +8,7 @@ import {
     uploadContract, instantiateContract, queryContract, toEncodedBinary,
 } from './helpers.js'
 import { join } from 'path'
-import { LCDClient } from '@terra-money/terra.js';
+import { LCDClient } from '@palomachain/paloma.js';
 import { chainConfigs } from "./types.d/chain_configs.js";
 import { strictEqual } from "assert";
 
@@ -81,6 +81,7 @@ async function uploadAndInitToken(terra: LCDClient, wallet: any) {
 async function uploadPairContracts(terra: LCDClient, wallet: any) {
     let network = readArtifact(terra.config.chainID)
 
+    console.log('network.pairCodeID', network.pairCodeID);
     if (!network.pairCodeID) {
         console.log('Register Pair Contract...')
         network.pairCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair.wasm')!)
@@ -89,7 +90,10 @@ async function uploadPairContracts(terra: LCDClient, wallet: any) {
 
     if (!network.pairStableCodeID) {
         console.log('Register Stable Pair Contract...')
-        network.pairStableCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair_stable.wasm')!)
+        // XXX: Contract is too large for RPC (???), hardcode a previously uploaded contract.
+        //     RPC error -32600 - Invalid Request: error reading request body: http: request body too large
+        //network.pairStableCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_pair_stable.wasm')!)
+        network.pairStableCodeID = 40
         writeArtifact(network, terra.config.chainID)
     }
 }
@@ -146,6 +150,7 @@ async function uploadAndInitFactory(terra: LCDClient, wallet: any) {
                     chainConfigs.factory.initMsg.pair_configs[i].code_id ||= network.pairCodeID;
                 }
 
+                // XXX: Nothing wrong here, just tagging this as the other spot we need to handle the stable pair contract.
                 if (JSON.stringify(chainConfigs.factory.initMsg.pair_configs[i].pair_type) === JSON.stringify({ stable: {} })) {
                     chainConfigs.factory.initMsg.pair_configs[i].code_id ||= network.pairStableCodeID;
                 }

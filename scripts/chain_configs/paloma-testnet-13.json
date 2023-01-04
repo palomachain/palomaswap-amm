@@ -1,35 +1,35 @@
 {
   "generalInfo": {
-    "multisig": "terra174gu7kg8ekk5gsxdma5jlfcedm653tyg6ayppw"
+    "multisig": "paloma1nty4gn8k2nrewy26fm62v03322fxgpq0hxssn6"
   },
   "token": {
     "admin": null,
     "initMsg": {
       "name": "Paloma",
-      "symbol": "ASTRO",
+      "symbol": "GRAIN",
       "decimals": 6,
       "initial_balances": [
         {
           "address": null,
-          "amount": "1100000000000000"
+          "amount": "10000000000"
         }
       ],
       "marketing": {
         "project": "Paloma",
-        "description": "Paloma is a neutral marketplace where anyone, from anywhere in the galaxy, can dock to trade their wares.",
+        "description": "Paloma will send your messages to any blockchain for free. Never exchange tokens to pay for gas ever again.",
         "marketing": null,
         "logo": {
-          "url": "https://paloma.fi/astro_logo.svg"
+          "url": "https://www.palomachain.com/assets/logo/paloma-logotype.svg"
         }
       }
     },
-    "label": "Paloma ASTRO"
+    "label": "Paloma Grain"
   },
   "treasury": {
     "admin": null,
     "initMsg": {
       "admins": [
-        "paloma1qsxmvwaajkacg4p40k2k4k6ra3p3lxr8wa476n"
+        "paloma1nty4gn8k2nrewy26fm62v03322fxgpq0hxssn6"
       ],
       "mutable": true
     },
@@ -43,10 +43,10 @@
       "deposit_token_addr": null,
       "marketing": {
         "project": "Paloma",
-        "description": "Paloma is a neutral marketplace where anyone, from anywhere in the galaxy, can dock to trade their wares.",
+        "description": "Paloma will send your messages to any blockchain for free. Never exchange tokens to pay for gas ever again.",
         "marketing": null,
         "logo": {
-          "url": "https://app.paloma.fi/tokens/xAstro.svg"
+          "url": "https://www.palomachain.com/assets/logo/paloma-logotype.svg"
         }
       }
     },
@@ -147,8 +147,8 @@
     "initMsg": {
       "owner": null,
       "astro_token": null,
-      "start_block": "5918639",
-      "tokens_per_block": "8403094",
+      "start_block": "583291",
+      "tokens_per_block": "10000000",
       "vesting_contract": null,
       "factory": null,
       "whitelist_code_id": null
@@ -179,7 +179,7 @@
     },
     "label": "Paloma Oracle"
   },
-  "create_pairs": {
+  "createPairs": {
     "pairs": []
   }
 }

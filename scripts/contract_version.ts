@@ -4,7 +4,7 @@ import {
     readArtifact,
     queryContractRaw, toDecodedBinary, strToEncodedBinary, getRemoteFile, ARTIFACTS_PATH
 } from "./helpers.js"
-import {LCDClient} from "@terra-money/terra.js";
+import {LCDClient} from "@palomachain/paloma.js";
 import fs from "fs";
 import path from "path";
 
