@@ -1,19 +1,19 @@
+use astroport::asset::{
+    native_asset, native_asset_info, token_asset, token_asset_info, Asset, AssetInfo, PairInfo,
+    ULUNA_DENOM, UUSD_DENOM,
+};
+use astroport::factory::{PairConfig, PairType, UpdateAddr};
+use astroport::maker::{
+    AssetWithLimit, BalancesResponse, ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg,
+};
+use astroport::pair::StablePoolParams;
+use astroport::token::InstantiateMsg as TokenInstantiateMsg;
 use astroport_governance::utils::EPOCH_START;
 use cosmwasm_std::{
     attr, coin, to_binary, Addr, Coin, Decimal, QueryRequest, Uint128, Uint64, WasmQuery,
 };
 use cw20::{BalanceResponse, Cw20QueryMsg, MinterResponse};
 use cw_multi_test::{next_block, App, ContractWrapper, Executor};
-use paloma::asset::{
-    native_asset, native_asset_info, token_asset, token_asset_info, Asset, AssetInfo, PairInfo,
-    UGRAIN_DENOM, UUSD_DENOM,
-};
-use paloma::factory::{PairConfig, PairType, UpdateAddr};
-use paloma::maker::{
-    AssetWithLimit, BalancesResponse, ConfigResponse, ExecuteMsg, InstantiateMsg, QueryMsg,
-};
-use paloma::pair::StablePoolParams;
-use paloma::token::InstantiateMsg as TokenInstantiateMsg;
 use std::str::FromStr;
 
 fn mock_app(owner: Addr, coins: Vec<Coin>) -> App {
@@ -52,9 +52,9 @@ fn instantiate_contracts(
     pair_type: Option<PairType>,
 ) -> (Addr, Addr, Addr, Addr) {
     let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_token::contract::execute,
-        paloma_token::contract::instantiate,
-        paloma_token::contract::query,
+        astroport_token::contract::execute,
+        astroport_token::contract::instantiate,
+        astroport_token::contract::query,
     ));
 
     let astro_token_code_id = router.store_code(astro_token_contract);
@@ -86,22 +86,22 @@ fn instantiate_contracts(
         Some(PairType::Stable {}) => {
             let pair_contract = Box::new(
                 ContractWrapper::new_with_empty(
-                    paloma_pair_stable::contract::execute,
-                    paloma_pair_stable::contract::instantiate,
-                    paloma_pair_stable::contract::query,
+                    astroport_pair_stable::contract::execute,
+                    astroport_pair_stable::contract::instantiate,
+                    astroport_pair_stable::contract::query,
                 )
-                .with_reply_empty(paloma_pair_stable::contract::reply),
+                .with_reply_empty(astroport_pair_stable::contract::reply),
             );
             router.store_code(pair_contract)
         }
         _ => {
             let pair_contract = Box::new(
                 ContractWrapper::new_with_empty(
-                    paloma_pair::contract::execute,
-                    paloma_pair::contract::instantiate,
-                    paloma_pair::contract::query,
+                    astroport_pair::contract::execute,
+                    astroport_pair::contract::instantiate,
+                    astroport_pair::contract::query,
                 )
-                .with_reply_empty(paloma_pair::contract::reply),
+                .with_reply_empty(astroport_pair::contract::reply),
             );
             router.store_code(pair_contract)
         }
@@ -109,15 +109,15 @@ fn instantiate_contracts(
 
     let factory_contract = Box::new(
         ContractWrapper::new_with_empty(
-            paloma_factory::contract::execute,
-            paloma_factory::contract::instantiate,
-            paloma_factory::contract::query,
+            astroport_factory::contract::execute,
+            astroport_factory::contract::instantiate,
+            astroport_factory::contract::query,
         )
-        .with_reply_empty(paloma_factory::contract::reply),
+        .with_reply_empty(astroport_factory::contract::reply),
     );
 
     let factory_code_id = router.store_code(factory_contract);
-    let msg = paloma::factory::InstantiateMsg {
+    let msg = astroport::factory::InstantiateMsg {
         pair_configs: vec![PairConfig {
             code_id: pair_code_id,
             pair_type: pair_type.unwrap_or(PairType::Xyk {}),
@@ -166,15 +166,15 @@ fn instantiate_contracts(
             owner.clone(),
             &init_msg,
             &[],
-            "Paloma escrow fee distributor",
+            "Astroport escrow fee distributor",
             None,
         )
         .unwrap();
 
     let maker_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_maker::contract::execute,
-        paloma_maker::contract::instantiate,
-        paloma_maker::contract::query,
+        astroport_maker::contract::execute,
+        astroport_maker::contract::instantiate,
+        astroport_maker::contract::query,
     ));
 
     let market_code_id = router.store_code(maker_contract);
@@ -209,9 +209,9 @@ fn instantiate_contracts(
 
 fn instantiate_token(router: &mut App, owner: Addr, name: String, symbol: String) -> Addr {
     let token_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_token::contract::execute,
-        paloma_token::contract::instantiate,
-        paloma_token::contract::query,
+        astroport_token::contract::execute,
+        astroport_token::contract::instantiate,
+        astroport_token::contract::query,
     ));
 
     let token_code_id = router.store_code(token_contract);
@@ -325,7 +325,7 @@ fn create_pair(
         .execute_contract(
             owner.clone(),
             factory_instance.clone(),
-            &paloma::factory::ExecuteMsg::CreatePair {
+            &astroport::factory::ExecuteMsg::CreatePair {
                 pair_type: pair_type.unwrap_or(PairType::Xyk {}),
                 asset_infos: asset_infos.clone(),
                 init_params: Some(
@@ -347,7 +347,7 @@ fn create_pair(
         .wrap()
         .query(&QueryRequest::Wasm(WasmQuery::Smart {
             contract_addr: factory_instance.clone().to_string(),
-            msg: to_binary(&paloma::factory::QueryMsg::Pair {
+            msg: to_binary(&astroport::factory::QueryMsg::Pair {
                 asset_infos: asset_infos.clone(),
             })
             .unwrap(),
@@ -392,7 +392,7 @@ fn create_pair(
         .execute_contract(
             user.clone(),
             pair_info.contract_addr.clone(),
-            &paloma::pair::ExecuteMsg::ProvideLiquidity {
+            &astroport::pair::ExecuteMsg::ProvideLiquidity {
                 assets,
                 slippage_tolerance: None,
                 auto_stake: None,
@@ -416,7 +416,7 @@ fn update_config() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -646,7 +646,7 @@ fn test_maker_collect(
 #[test]
 fn collect_all() {
     let uusd_asset = String::from(UUSD_DENOM);
-    let ugrain_asset = String::from(UGRAIN_DENOM);
+    let uluna_asset = String::from(ULUNA_DENOM);
     let owner = Addr::unchecked("owner");
 
     let mut router = mock_app(
@@ -657,7 +657,7 @@ fn collect_all() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: ugrain_asset.clone(),
+                denom: uluna_asset.clone(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -705,7 +705,7 @@ fn collect_all() {
             token_asset(astro_token_instance.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
             native_asset(uusd_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
@@ -733,7 +733,7 @@ fn collect_all() {
             limit: None,
         },
         AssetWithLimit {
-            info: native_asset(ugrain_asset.clone(), Uint128::zero()).info,
+            info: native_asset(uluna_asset.clone(), Uint128::zero()).info,
             limit: None,
         },
         AssetWithLimit {
@@ -760,7 +760,7 @@ fn collect_all() {
             token_asset_info(test_token_instance.clone()),
         ),
         (
-            native_asset_info(ugrain_asset.clone()),
+            native_asset_info(uluna_asset.clone()),
             native_asset_info(uusd_asset.clone()),
         ),
     ];
@@ -777,14 +777,14 @@ fn collect_all() {
             amount: Uint128::new(100),
         },
         Coin {
-            denom: ugrain_asset.clone(),
+            denom: uluna_asset.clone(),
             amount: Uint128::new(110),
         },
     ];
 
     let expected_balances = vec![
         native_asset(uusd_asset.clone(), Uint128::new(100)),
-        native_asset(ugrain_asset.clone(), Uint128::new(110)),
+        native_asset(uluna_asset.clone(), Uint128::new(110)),
         token_asset(astro_token_instance.clone(), Uint128::new(10)),
         token_asset(usdc_token_instance.clone(), Uint128::new(20)),
         token_asset(test_token_instance.clone(), Uint128::new(30)),
@@ -793,7 +793,7 @@ fn collect_all() {
     let collected_balances = vec![
         // 262 ASTRO = 10 ASTRO +
         // 99 ASTRO (100 uusd - 1 fee -> 99 ASTRO) +
-        // 108 ASTRO (110 ugrain - 1 fee -> 109 uusd  - 1 fee -> 108 ASTRO) +
+        // 108 ASTRO (110 uluna - 1 fee -> 109 uusd  - 1 fee -> 108 ASTRO) +
         // 17 ASTRO (20 usdc -> 20 test - 1 fee -> 19 bridge - 1 fee -> 18 - 1 fee) +
         // 28 ASTRO (30 test -> 30 bridge - 1 fee -> 29 - 1 fee)
         (astro_token_instance.clone(), 262u128),
@@ -826,7 +826,7 @@ fn collect_default_bridges() {
         owner.clone(),
         vec![
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
@@ -856,15 +856,15 @@ fn collect_default_bridges() {
         "BRIDGE-UUSD".to_string(),
     );
 
-    let bridge_ugrain_token_instance = instantiate_token(
+    let bridge_uluna_token_instance = instantiate_token(
         &mut router,
         owner.clone(),
-        "Bridge ugrain token".to_string(),
-        "BRIDGE-UGRAIN".to_string(),
+        "Bridge uluna token".to_string(),
+        "BRIDGE-ULUNA".to_string(),
     );
 
     let uusd_asset = String::from(UUSD_DENOM);
-    let ugrain_asset = String::from(UGRAIN_DENOM);
+    let uluna_asset = String::from(ULUNA_DENOM);
 
     // Create pairs
     let pairs = vec![
@@ -873,7 +873,7 @@ fn collect_default_bridges() {
             token_asset(astro_token_instance.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
             native_asset(uusd_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
@@ -885,10 +885,10 @@ fn collect_default_bridges() {
         ],
         vec![
             token_asset(
-                bridge_ugrain_token_instance.clone(),
+                bridge_uluna_token_instance.clone(),
                 Uint128::from(100_000_u128),
             ),
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
         ],
     ];
 
@@ -899,7 +899,7 @@ fn collect_default_bridges() {
             limit: None,
         },
         AssetWithLimit {
-            info: token_asset(bridge_ugrain_token_instance.clone(), Uint128::zero()).info,
+            info: token_asset(bridge_uluna_token_instance.clone(), Uint128::zero()).info,
             limit: None,
         },
     ];
@@ -909,24 +909,24 @@ fn collect_default_bridges() {
 
     let mint_balances = vec![
         (bridge_uusd_token_instance.clone(), 100u128),
-        (bridge_ugrain_token_instance.clone(), 200u128),
+        (bridge_uluna_token_instance.clone(), 200u128),
     ];
 
     let native_balances = vec![];
 
     let expected_balances = vec![
         token_asset(bridge_uusd_token_instance.clone(), Uint128::new(100)),
-        token_asset(bridge_ugrain_token_instance.clone(), Uint128::new(200)),
+        token_asset(bridge_uluna_token_instance.clone(), Uint128::new(200)),
     ];
 
     let collected_balances = vec![
         // 1.
         // 100 uusd-bridge -> 99 uusd (-15 native transfer fee from swap) -> 84 uusd
-        // 200 ugrain-bridge -1 fee -> 199 ugrain
+        // 200 uluna-bridge -1 fee -> 199 uluna
 
         // 2.
         // 84 uusd (-12 native transfer fee) - 1 fee -> 71 ASTRO
-        // 119 ugrain -1 fee -> 198 uusd (-28 native transfer fee from swap) -> 170 uusd
+        // 119 uluna -1 fee -> 198 uusd (-28 native transfer fee from swap) -> 170 uusd
 
         // 3.
         // 170 uusd (-25 native transfer fee) -> 145 uusd -> 144 ASTRO
@@ -934,7 +934,7 @@ fn collect_default_bridges() {
         // Total: 25
         (astro_token_instance, 295u128),
         // (bridge_uusd_token_instance, 0u128),
-        // (bridge_ugrain_token_instance, 0u128),
+        // (bridge_uluna_token_instance, 0u128),
     ];
 
     test_maker_collect(
@@ -966,7 +966,7 @@ fn collect_maxdepth_test() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -1007,17 +1007,17 @@ fn collect_maxdepth_test() {
     );
 
     let uusd_asset = String::from("uusd");
-    let ugrain_asset = String::from("ugrain");
+    let uluna_asset = String::from("uluna");
 
     // Create pairs
     let mut pair_addresses = vec![];
     for t in vec![
         vec![
             native_asset(uusd_asset.clone(), Uint128::from(100_000_u128)),
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
             token_asset(usdc_token_instance.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
@@ -1061,12 +1061,12 @@ fn collect_maxdepth_test() {
                         token_asset_info(test_token_instance.clone()),
                     ),
                     (
-                        native_asset_info(ugrain_asset.clone()),
+                        native_asset_info(uluna_asset.clone()),
                         token_asset_info(usdc_token_instance.clone()),
                     ),
                     (
                         native_asset_info(uusd_asset.clone()),
-                        native_asset_info(ugrain_asset.clone()),
+                        native_asset_info(uluna_asset.clone()),
                     ),
                 ]),
                 remove: None,
@@ -1088,7 +1088,7 @@ fn collect_err_no_swap_pair() {
         owner.clone(),
         vec![
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
@@ -1119,7 +1119,7 @@ fn collect_err_no_swap_pair() {
     );
 
     let uusd_asset = String::from("uusd");
-    let ugrain_asset = String::from("ugrain");
+    let uluna_asset = String::from("uluna");
     let ukrt_asset = String::from("ukrt");
     let uabc_asset = String::from("uabc");
 
@@ -1134,7 +1134,7 @@ fn collect_err_no_swap_pair() {
             native_asset(uabc_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
             native_asset(uusd_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
@@ -1220,7 +1220,7 @@ fn update_bridges() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
@@ -1246,7 +1246,7 @@ fn update_bridges() {
     let msg = ExecuteMsg::UpdateBridges {
         add: Some(vec![
             (
-                native_asset_info(String::from("ugrain")),
+                native_asset_info(String::from("uluna")),
                 native_asset_info(String::from("uusd")),
             ),
             (
@@ -1269,13 +1269,13 @@ fn update_bridges() {
         .unwrap_err();
     assert_eq!(
         err.root_cause().to_string(),
-        "Invalid bridge. Pool ugrain to uusd not found"
+        "Invalid bridge. Pool uluna to uusd not found"
     );
 
     // Create pair so that add bridge check does not fail
     for pair in vec![
         vec![
-            native_asset(String::from("ugrain"), Uint128::from(100_000_u128)),
+            native_asset(String::from("uluna"), Uint128::from(100_000_u128)),
             native_asset(String::from("uusd"), Uint128::from(100_000_u128)),
         ],
         vec![
@@ -1299,7 +1299,7 @@ fn update_bridges() {
         .unwrap_err();
     assert_eq!(
         err.root_cause().to_string(),
-        "Invalid bridge destination. ugrain cannot be swapped to ASTRO"
+        "Invalid bridge destination. uluna cannot be swapped to ASTRO"
     );
 
     // Create pair so that add bridge check does not fail
@@ -1331,8 +1331,8 @@ fn update_bridges() {
     assert_eq!(
         resp,
         vec![
-            (String::from("ugrain"), String::from("uusd")),
             (String::from("ukrt"), String::from("uusd")),
+            (String::from("uluna"), String::from("uusd")),
         ]
     );
 
@@ -1368,13 +1368,13 @@ fn update_bridges() {
         }))
         .unwrap();
 
-    assert_eq!(resp, vec![(String::from("ugrain"), String::from("uusd")),]);
+    assert_eq!(resp, vec![(String::from("uluna"), String::from("uusd")),]);
 }
 
 #[test]
 fn collect_with_asset_limit() {
     let uusd_asset = String::from("uusd");
-    let ugrain_asset = String::from("ugrain");
+    let uluna_asset = String::from("uluna");
     let owner = Addr::unchecked("owner");
     let mut router = mock_app(
         owner.clone(),
@@ -1384,7 +1384,7 @@ fn collect_with_asset_limit() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: ugrain_asset.clone(),
+                denom: uluna_asset.clone(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -1436,7 +1436,7 @@ fn collect_with_asset_limit() {
             native_asset(uusd_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
-            native_asset(ugrain_asset, Uint128::from(100_000_u128)),
+            native_asset(uluna_asset, Uint128::from(100_000_u128)),
             native_asset(uusd_asset, Uint128::from(100_000_u128)),
         ],
         vec![
@@ -1728,14 +1728,14 @@ impl CheckDistributedAstro {
 #[test]
 fn distribute_initially_accrued_fees() {
     let uusd_asset = String::from("uusd");
-    let ugrain_asset = String::from("ugrain");
+    let uluna_asset = String::from("uluna");
     let owner = Addr::unchecked("owner");
 
     let mut router = mock_app(
         owner.clone(),
         vec![
             Coin {
-                denom: ugrain_asset.clone(),
+                denom: uluna_asset.clone(),
                 amount: Uint128::new(100_000_000_000_000000u128),
             },
             Coin {
@@ -1787,7 +1787,7 @@ fn distribute_initially_accrued_fees() {
             token_asset(astro_token_instance.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
             native_asset(uusd_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
@@ -1824,7 +1824,7 @@ fn distribute_initially_accrued_fees() {
             limit: None,
         },
         AssetWithLimit {
-            info: native_asset(ugrain_asset.clone(), Uint128::zero()).info,
+            info: native_asset(uluna_asset.clone(), Uint128::zero()).info,
             limit: None,
         },
         AssetWithLimit {
@@ -1857,7 +1857,7 @@ fn distribute_initially_accrued_fees() {
                         token_asset_info(test_token_instance.clone()),
                     ),
                     (
-                        native_asset_info(ugrain_asset.clone()),
+                        native_asset_info(uluna_asset.clone()),
                         native_asset_info(uusd_asset.clone()),
                     ),
                 ]),
@@ -1897,7 +1897,7 @@ fn distribute_initially_accrued_fees() {
             owner.clone(),
             maker_instance.clone(),
             &[
-                coin(110, ugrain_asset.clone()),
+                coin(110, uluna_asset.clone()),
                 coin(100, uusd_asset.clone()),
             ],
         )
@@ -2153,7 +2153,7 @@ fn distribute_initially_accrued_fees() {
 #[test]
 fn collect_3pools() {
     let uusd_asset = String::from("uusd");
-    let ugrain_asset = String::from("ugrain");
+    let uluna_asset = String::from("uluna");
     let owner = Addr::unchecked("owner");
     let mut router = mock_app(
         owner.clone(),
@@ -2163,7 +2163,7 @@ fn collect_3pools() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: ugrain_asset.clone(),
+                denom: uluna_asset.clone(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -2196,28 +2196,28 @@ fn collect_3pools() {
     );
 
     // Create pairs
-    // There are 2 routes to swap USDC -> GRAIN: through (USDC, TEST, GRAIN) or (USDC, GRAIN)
+    // There are 2 routes to swap USDC -> LUNA: through (USDC, TEST, LUNA) or (USDC, LUNA)
     for t in vec![
         vec![
-            // intentionally providing less usdc thus this pool will be selected to swap USDC -> GRAIN
+            // intentionally providing less usdc thus this pool will be selected to swap USDC -> LUNA
             token_asset(usdc_token_instance.clone(), Uint128::from(80_000_u128)),
             token_asset(test_token.clone(), Uint128::from(100_000_u128)),
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
             token_asset(usdc_token_instance.clone(), Uint128::from(100_000_u128)),
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
             token_asset(astro_token_instance.clone(), Uint128::from(100_000_u128)),
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
             token_asset(astro_token_instance.clone(), Uint128::from(100_000_u128)),
             native_asset(uusd_asset.clone(), Uint128::from(100_000_u128)),
         ],
         vec![
-            native_asset(ugrain_asset.clone(), Uint128::from(100_000_u128)),
+            native_asset(uluna_asset.clone(), Uint128::from(100_000_u128)),
             native_asset(uusd_asset.clone(), Uint128::from(100_000_u128)),
         ],
     ] {
@@ -2351,15 +2351,15 @@ fn collect_3pools() {
         Uint128::new(62u128),
     );
 
-    // Check that USDC -> GRAIN swap was not executed through pair (usdc, grain) but through (usdc, grain, test).
+    // Check that USDC -> LUNA swap was not executed through pair (usdc, luna) but through (usdc, luna, test).
     let pair_info: PairInfo = router
         .wrap()
         .query_wasm_smart(
             &factory_instance,
-            &paloma::factory::QueryMsg::Pair {
+            &astroport::factory::QueryMsg::Pair {
                 asset_infos: vec![
                     token_asset_info(usdc_token_instance),
-                    native_asset_info(ugrain_asset),
+                    native_asset_info(uluna_asset),
                 ],
             },
         )

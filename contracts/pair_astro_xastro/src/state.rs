@@ -8,7 +8,7 @@ pub struct Params {
     pub astro_addr: Addr,
     /// xASTRO token contract address.
     pub xastro_addr: Addr,
-    /// Paloma Staking contract address.
+    /// Astroport Staking contract address.
     pub staking_addr: Addr,
 }
 

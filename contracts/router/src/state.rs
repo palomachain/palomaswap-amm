@@ -10,5 +10,5 @@ pub const CONFIG: Item<Config> = Item::new("config");
 #[cw_serde]
 pub struct Config {
     /// The factory contract address
-    pub paloma_factory: Addr,
+    pub astroport_factory: Addr,
 }

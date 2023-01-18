@@ -1,22 +1,22 @@
-use paloma::asset::{Asset, AssetInfo, PairInfo};
-use paloma::factory::{InstantiateMsg as FactoryInstantiateMsg, PairConfig, PairType};
-use paloma::pair::{
+use astroport::asset::{Asset, AssetInfo, PairInfo};
+use astroport::factory::{InstantiateMsg as FactoryInstantiateMsg, PairConfig, PairType};
+use astroport::pair::{
     ConfigResponse, Cw20HookMsg, InstantiateMsg as PairInstantiateMsg, ReverseSimulationResponse,
     SimulationResponse,
 };
-use paloma::staking::{
+use astroport::staking::{
     ConfigResponse as StakingConfigResponse, InstantiateMsg as StakingInstantiateMsg,
     QueryMsg as StakingQueryMsg,
 };
 
+use astroport::pair_bonded::{ExecuteMsg, QueryMsg};
+use astroport::token::InstantiateMsg as TokenInstantiateMsg;
+use astroport_pair_astro_xastro::state::Params;
 use cosmwasm_std::{to_binary, Addr, Coin, Uint128};
 use cw20::{Cw20ExecuteMsg, Cw20QueryMsg, MinterResponse};
 use cw_multi_test::{App, ContractWrapper, Executor};
-use paloma::pair_bonded::{ExecuteMsg, QueryMsg};
-use paloma::token::InstantiateMsg as TokenInstantiateMsg;
-use paloma_pair_astro_xastro::state::Params;
 
-struct PalomaContracts {
+struct AstroportContracts {
     pair_instance: Addr,
     astro_instance: Addr,
     xastro_instance: Addr,
@@ -28,9 +28,9 @@ fn mock_app(owner: Addr, coins: Vec<Coin>) -> App {
 
 fn store_pair_code(app: &mut App) -> u64 {
     let pair_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_pair_astro_xastro::execute,
-        paloma_pair_astro_xastro::instantiate,
-        paloma_pair_astro_xastro::query,
+        astroport_pair_astro_xastro::execute,
+        astroport_pair_astro_xastro::instantiate,
+        astroport_pair_astro_xastro::query,
     ));
 
     app.store_code(pair_contract)
@@ -39,11 +39,11 @@ fn store_pair_code(app: &mut App) -> u64 {
 fn store_staking_code(app: &mut App) -> u64 {
     let staking_contract = Box::new(
         ContractWrapper::new_with_empty(
-            paloma_staking::contract::execute,
-            paloma_staking::contract::instantiate,
-            paloma_staking::contract::query,
+            astroport_staking::contract::execute,
+            astroport_staking::contract::instantiate,
+            astroport_staking::contract::query,
         )
-        .with_reply_empty(paloma_staking::contract::reply),
+        .with_reply_empty(astroport_staking::contract::reply),
     );
 
     app.store_code(staking_contract)
@@ -51,9 +51,9 @@ fn store_staking_code(app: &mut App) -> u64 {
 
 fn store_astro_code(app: &mut App) -> u64 {
     let astro_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_token::contract::execute,
-        paloma_token::contract::instantiate,
-        paloma_token::contract::query,
+        astroport_token::contract::execute,
+        astroport_token::contract::instantiate,
+        astroport_token::contract::query,
     ));
 
     app.store_code(astro_contract)
@@ -61,9 +61,9 @@ fn store_astro_code(app: &mut App) -> u64 {
 
 fn store_xastro_code(app: &mut App) -> u64 {
     let xastro_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_xastro_token::contract::execute,
-        paloma_xastro_token::contract::instantiate,
-        paloma_xastro_token::contract::query,
+        astroport_xastro_token::contract::execute,
+        astroport_xastro_token::contract::instantiate,
+        astroport_xastro_token::contract::query,
     ));
 
     app.store_code(xastro_contract)
@@ -71,9 +71,9 @@ fn store_xastro_code(app: &mut App) -> u64 {
 
 fn store_factory_code(app: &mut App) -> u64 {
     let factory_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_factory::contract::execute,
-        paloma_factory::contract::instantiate,
-        paloma_factory::contract::query,
+        astroport_factory::contract::execute,
+        astroport_factory::contract::instantiate,
+        astroport_factory::contract::query,
     ));
 
     app.store_code(factory_contract)
@@ -98,15 +98,22 @@ fn instantiate_factory_contract(app: &mut App, owner: Addr, pair_code_id: u64) -
         whitelist_code_id: 234u64,
     };
 
-    app.instantiate_contract(code, owner, &msg, &[], String::from("Paloma Factory"), None)
-        .unwrap()
+    app.instantiate_contract(
+        code,
+        owner,
+        &msg,
+        &[],
+        String::from("Astroport Factory"),
+        None,
+    )
+    .unwrap()
 }
 
 fn instantiate_token(app: &mut App, owner: Addr) -> Addr {
     let token_code_id = store_astro_code(app);
 
     let msg = TokenInstantiateMsg {
-        name: "Paloma Token".to_string(),
+        name: "Astroport Token".to_string(),
         symbol: "ASTRO".to_string(),
         decimals: 6,
         initial_balances: vec![],
@@ -122,7 +129,7 @@ fn instantiate_token(app: &mut App, owner: Addr) -> Addr {
         owner.clone(),
         &msg,
         &[],
-        String::from("Paloma Token"),
+        String::from("Astroport Token"),
         None,
     )
     .unwrap()
@@ -145,7 +152,7 @@ fn instantiate_staking(app: &mut App, owner: Addr, token_instance: &Addr) -> (Ad
             owner.clone(),
             &msg,
             &[],
-            String::from("Paloma Staking"),
+            String::from("Astroport Staking"),
             None,
         )
         .unwrap();
@@ -158,7 +165,7 @@ fn instantiate_staking(app: &mut App, owner: Addr, token_instance: &Addr) -> (Ad
     (staking_instance, resp.share_token_addr)
 }
 
-fn instantiate_paloma(mut router: &mut App, owner: &Addr) -> PalomaContracts {
+fn instantiate_astroport(mut router: &mut App, owner: &Addr) -> AstroportContracts {
     let pair_code_id = store_pair_code(&mut router);
 
     let factory_instance = instantiate_factory_contract(router, owner.clone(), pair_code_id);
@@ -199,7 +206,7 @@ fn instantiate_paloma(mut router: &mut App, owner: &Addr) -> PalomaContracts {
         )
         .unwrap();
 
-    PalomaContracts {
+    AstroportContracts {
         pair_instance,
         astro_instance: token_instance,
         xastro_instance,
@@ -325,7 +332,7 @@ fn test_pair_swap() {
 
     let mut router = mock_app(owner.clone(), vec![]);
 
-    let contracts = instantiate_paloma(&mut router, &owner);
+    let contracts = instantiate_astroport(&mut router, &owner);
 
     // Mint ASTRO
     mint_tokens(
@@ -570,7 +577,7 @@ fn test_unsupported_methods() {
 
     let mut router = mock_app(owner.clone(), vec![]);
 
-    let contracts = instantiate_paloma(&mut router, &owner);
+    let contracts = instantiate_astroport(&mut router, &owner);
 
     // Test provide liquidity
     let err = router
@@ -667,7 +674,7 @@ fn test_queries() {
 
     let mut router = mock_app(owner.clone(), vec![]);
 
-    let contracts = instantiate_paloma(&mut router, &owner);
+    let contracts = instantiate_astroport(&mut router, &owner);
 
     let res: ConfigResponse = router
         .wrap()

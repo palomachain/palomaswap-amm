@@ -1,4 +1,4 @@
-use paloma::asset::PairInfo;
+use astroport::asset::PairInfo;
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, Decimal256, Uint128};
 use cw_storage_plus::{Item, Map};
@@ -25,20 +25,20 @@ pub struct Config {
     pub next_amp: u64,
     // This is the timestamp when the current pool amplification should be `next_amp`
     pub next_amp_time: u64,
-    /// Contract to claim bGRAIN rewards from
-    pub bgrain_rewarder: Addr,
-    /// The generator address used for determining users' bGRAIN reward shares (while they are staked)
+    /// Contract to claim bLUNA rewards from
+    pub bluna_rewarder: Addr,
+    /// The generator address used for determining users' bLUNA reward shares (while they are staked)
     pub generator: Addr,
 }
 
 /// Stores the pool configuration
 pub const CONFIG: Item<Config> = Item::new("config");
 
-/// Stores the address of the contract that holds bGRAIN rewards
-pub const BGRAIN_REWARD_HOLDER: Item<Addr> = Item::new("bgrain_reward_holder");
+/// Stores the address of the contract that holds bLUNA rewards
+pub const BLUNA_REWARD_HOLDER: Item<Addr> = Item::new("bluna_reward_holder");
 
-/// Stores the bGRAIN global reward index
-pub const BGRAIN_REWARD_GLOBAL_INDEX: Item<Decimal256> = Item::new("bgrain_reward_global_index");
+/// Stores the bLUNA global reward index
+pub const BLUNA_REWARD_GLOBAL_INDEX: Item<Decimal256> = Item::new("bluna_reward_global_index");
 
 /// Stores each LP's reward index to know when is the last time when they claimed
-pub const BGRAIN_REWARD_USER_INDEXES: Map<&Addr, Decimal256> = Map::new("bgrain_reward_user_indexes");
+pub const BLUNA_REWARD_USER_INDEXES: Map<&Addr, Decimal256> = Map::new("bluna_reward_user_indexes");

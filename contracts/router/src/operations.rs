@@ -1,11 +1,11 @@
+use astroport::asset::{Asset, AssetInfo};
+use astroport::pair::ExecuteMsg as PairExecuteMsg;
+use astroport::querier::{query_balance, query_pair_info, query_token_balance};
+use astroport::router::SwapOperation;
 use cosmwasm_std::{
     to_binary, Coin, CosmosMsg, Decimal, DepsMut, Env, MessageInfo, Response, StdResult, WasmMsg,
 };
 use cw20::Cw20ExecuteMsg;
-use paloma::asset::{Asset, AssetInfo};
-use paloma::pair::ExecuteMsg as PairExecuteMsg;
-use paloma::querier::{query_balance, query_pair_info, query_token_balance};
-use paloma::router::SwapOperation;
 
 use crate::error::ContractError;
 use crate::state::CONFIG;
@@ -38,7 +38,7 @@ pub fn execute_swap_operation(
             let config = CONFIG.load(deps.storage)?;
             let pair_info = query_pair_info(
                 &deps.querier,
-                &config.paloma_factory,
+                &config.astroport_factory,
                 &[offer_asset_info.clone(), ask_asset_info.clone()],
             )?;
 
@@ -73,7 +73,7 @@ pub fn execute_swap_operation(
 
 /// Creates a message of type [`CosmosMsg`] representing a swap operation.
 ///
-/// * **pair_contract** Paloma pair contract for which the swap operation is performed.
+/// * **pair_contract** Astroport pair contract for which the swap operation is performed.
 ///
 /// * **offer_asset** asset that is swapped. It also mentions the amount to swap.
 ///
@@ -126,7 +126,7 @@ pub fn asset_into_swap_msg(
             msg: to_binary(&Cw20ExecuteMsg::Send {
                 contract: pair_contract,
                 amount: offer_asset.amount,
-                msg: to_binary(&paloma::pair::Cw20HookMsg::Swap {
+                msg: to_binary(&astroport::pair::Cw20HookMsg::Swap {
                     ask_asset_info: Some(ask_asset_info),
                     belief_price,
                     max_spread,

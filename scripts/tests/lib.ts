@@ -14,7 +14,7 @@ import {
 import {LCDClient, Coin, MsgExecuteContract, Numeric, Coins} from '@palomachain/paloma.js';
 import util from 'util';
 
-export class Paloma {
+export class Astroport {
     terra: LCDClient;
     wallet: any;
 

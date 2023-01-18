@@ -11,7 +11,7 @@ use crate::factory::QueryMsg as FactoryQueryMsg;
 use cw20::{BalanceResponse, Cw20QueryMsg, TokenInfoResponse};
 
 /// mock_dependencies is a drop-in replacement for cosmwasm_std::testing::mock_dependencies
-/// This uses the Paloma CustomQuerier.
+/// This uses the Astroport CustomQuerier.
 pub fn mock_dependencies(
     contract_balance: &[Coin],
 ) -> OwnedDeps<MockStorage, MockApi, WasmMockQuerier> {
@@ -69,13 +69,13 @@ pub(crate) fn balances_to_map(
 }
 
 #[derive(Clone, Default)]
-pub struct PalomaFactoryQuerier {
+pub struct AstroportFactoryQuerier {
     pairs: HashMap<String, PairInfo>,
 }
 
-impl PalomaFactoryQuerier {
+impl AstroportFactoryQuerier {
     pub fn new(pairs: &[(&String, &PairInfo)]) -> Self {
-        PalomaFactoryQuerier {
+        AstroportFactoryQuerier {
             pairs: pairs_to_map(pairs),
         }
     }
@@ -176,7 +176,7 @@ impl CW20QueryHandler {
 
 struct DefaultQueryHandler {
     base: MockQuerier<Empty>,
-    paloma_factory_querier: PalomaFactoryQuerier,
+    astroport_factory_querier: AstroportFactoryQuerier,
 }
 
 impl DefaultQueryHandler {
@@ -188,7 +188,7 @@ impl DefaultQueryHandler {
             }) => match from_binary(&msg).unwrap() {
                 FactoryQueryMsg::Pair { asset_infos } => {
                     let key = asset_infos[0].to_string() + asset_infos[1].to_string().as_str();
-                    match self.paloma_factory_querier.pairs.get(&key) {
+                    match self.astroport_factory_querier.pairs.get(&key) {
                         Some(v) => SystemResult::Ok(to_binary(&v).into()),
                         None => SystemResult::Err(SystemError::InvalidRequest {
                             error: "No pair info exists".to_string(),
@@ -208,7 +208,7 @@ impl WasmMockQuerier {
         WasmMockQuerier {
             query_handler: DefaultQueryHandler {
                 base,
-                paloma_factory_querier: PalomaFactoryQuerier::default(),
+                astroport_factory_querier: AstroportFactoryQuerier::default(),
             },
             cw20_query_handler: CW20QueryHandler {
                 token_querier: TokenQuerier::default(),
@@ -222,9 +222,9 @@ impl WasmMockQuerier {
         self.cw20_query_handler.token_querier = TokenQuerier::new(balances);
     }
 
-    // Configure the Paloma pair
-    pub fn with_paloma_pairs(&mut self, pairs: &[(&String, &PairInfo)]) {
-        self.query_handler.paloma_factory_querier = PalomaFactoryQuerier::new(pairs);
+    // Configure the Astroport pair
+    pub fn with_astroport_pairs(&mut self, pairs: &[(&String, &PairInfo)]) {
+        self.query_handler.astroport_factory_querier = AstroportFactoryQuerier::new(pairs);
     }
 
     pub fn with_default_query_handler(&mut self) {

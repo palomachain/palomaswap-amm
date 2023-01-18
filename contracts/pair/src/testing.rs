@@ -7,13 +7,13 @@ use cw20::{Cw20ExecuteMsg, Cw20ReceiveMsg, MinterResponse};
 use proptest::prelude::*;
 use protobuf::Message;
 
-use paloma::asset::{Asset, AssetInfo, PairInfo};
-use paloma::factory::PairType;
-use paloma::pair::{
+use astroport::asset::{Asset, AssetInfo, PairInfo};
+use astroport::factory::PairType;
+use astroport::pair::{
     Cw20HookMsg, ExecuteMsg, InstantiateMsg, PoolResponse, ReverseSimulationResponse,
     SimulationResponse, TWAP_PRECISION,
 };
-use paloma::token::InstantiateMsg as TokenInstantiateMsg;
+use astroport::token::InstantiateMsg as TokenInstantiateMsg;
 
 use crate::contract::compute_offer_amount;
 use crate::contract::reply;
@@ -94,7 +94,7 @@ fn proper_initialization() {
                 .unwrap(),
                 funds: vec![],
                 admin: None,
-                label: String::from("Paloma LP token"),
+                label: String::from("Astroport LP token"),
             }
             .into(),
             id: 1,

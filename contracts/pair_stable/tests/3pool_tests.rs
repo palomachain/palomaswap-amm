@@ -1,9 +1,9 @@
 use cosmwasm_std::Addr;
 use itertools::Itertools;
 
+use astroport::asset::AssetInfoExt;
+use astroport_pair_stable::error::ContractError;
 use helper::AppExtension;
-use paloma::asset::AssetInfoExt;
-use paloma_pair_stable::error::ContractError;
 
 use crate::helper::{Helper, TestCoin};
 
@@ -14,7 +14,7 @@ fn provide_and_withdraw_no_fee() {
     let owner = Addr::unchecked("owner");
 
     let test_coins = vec![
-        TestCoin::native("ugrain"),
+        TestCoin::native("uluna"),
         TestCoin::cw20("USDC"),
         TestCoin::cw20("USDD"),
     ];
@@ -236,7 +236,7 @@ fn check_swaps() {
     let owner = Addr::unchecked("owner");
 
     let test_coins = vec![
-        TestCoin::native("ugrain"),
+        TestCoin::native("uluna"),
         TestCoin::cw20("USDC"),
         TestCoin::cw20("USDD"),
     ];
@@ -284,7 +284,7 @@ fn check_swaps() {
 fn check_wrong_initializations() {
     let owner = Addr::unchecked("owner");
 
-    let err = Helper::new(&owner, vec![TestCoin::native("ugrain")], 100u64, None).unwrap_err();
+    let err = Helper::new(&owner, vec![TestCoin::native("uluna")], 100u64, None).unwrap_err();
 
     assert_eq!(
         ContractError::InvalidNumberOfAssets {},
@@ -314,8 +314,8 @@ fn check_wrong_initializations() {
     let err = Helper::new(
         &owner,
         vec![
-            TestCoin::native("ugrain"),
-            TestCoin::native("ugrain"),
+            TestCoin::native("uluna"),
+            TestCoin::native("uluna"),
             TestCoin::cw20("USDC"),
         ],
         100u64,
@@ -349,7 +349,7 @@ fn check_withdraw_charges_fees() {
     let owner = Addr::unchecked("owner");
 
     let test_coins = vec![
-        TestCoin::native("ugrain"),
+        TestCoin::native("uluna"),
         TestCoin::cw20("USDC"),
         TestCoin::cw20("USDD"),
     ];
@@ -378,11 +378,11 @@ fn check_withdraw_charges_fees() {
     let usual_swap_amount = helper.coin_balance(&test_coins[1], &user1);
     assert_eq!(99_950000, usual_swap_amount);
 
-    // Trying to swap GRAIN -> USDC via provide/withdraw
+    // Trying to swap LUNA -> USDC via provide/withdraw
     let user2 = Addr::unchecked("user2");
     helper.give_me_money(&[offer_asset.clone()], &user2);
 
-    // Provide 100 x GRAIN
+    // Provide 100 x LUNA
     helper.provide_liquidity(&user2, &[offer_asset]).unwrap();
 
     // Withdraw 100 x USDC

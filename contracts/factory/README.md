@@ -1,12 +1,12 @@
-# Paloma Factory
+# Astroport Factory
 
-The factory contract can create new Paloma pair contracts (and associated LP token contracts) and it is used as a directory for all pairs. The default pair types are constant product and stableswap but governance may decide to add custom pools that can have any implementation.
+The factory contract can create new Astroport pair contracts (and associated LP token contracts) and it is used as a directory for all pairs. The default pair types are constant product and stableswap but governance may decide to add custom pools that can have any implementation.
 
 ---
 
 ## InstantiateMsg
 
-The instantiation message takes in the token code ID for the token type supported on Paloma. It also takes in the `fee_address` that collects fees for governance, the contract `owner`, the Generator contract address and the initial pair types available to create.
+The instantiation message takes in the token code ID for the token type supported on Astroport. It also takes in the `fee_address` that collects fees for governance, the contract `owner`, the Generator contract address and the initial pair types available to create.
 
 ```json
 {
@@ -31,7 +31,7 @@ The instantiation message takes in the token code ID for the token type supporte
 
 ### `update_config`
 
-Updates contract variables, namely the code ID of the token implementation used in Paloma, the address that receives governance fees and the Generator contract address.
+Updates contract variables, namely the code ID of the token implementation used in Astroport, the address that receives governance fees and the Generator contract address.
 
 ```json
 {
@@ -78,7 +78,7 @@ As an example, let's say a pool charged 30bps (`total_fee_bps` is 30) and we wan
 
 ### `create_pair`
 
-Anyone can execute this function to create an Paloma pair. `CreatePair` creates both a `Pair` contract and a `LP(liquidity provider)` token contract. The account that instantiates the pair must specify the pair type they want as well as the assets for which the pool is created.
+Anyone can execute this function to create an Astroport pair. `CreatePair` creates both a `Pair` contract and a `LP(liquidity provider)` token contract. The account that instantiates the pair must specify the pair type they want as well as the assets for which the pool is created.
 
 Custom pool types may also need extra parameters which can be packed in `init_params`.
 

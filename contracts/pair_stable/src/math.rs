@@ -1,6 +1,6 @@
+use astroport::asset::{AssetInfo, Decimal256Ext, DecimalAsset};
 use cosmwasm_std::{Decimal256, StdError, StdResult, Uint128, Uint256, Uint64};
 use itertools::Itertools;
-use paloma::asset::{AssetInfo, Decimal256Ext, DecimalAsset};
 
 /// The maximum number of calculation steps for Newton's method.
 const ITERATIONS: u8 = 32;
@@ -131,9 +131,9 @@ pub(crate) fn calc_y(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use astroport::asset::native_asset;
+    use astroport::querier::NATIVE_TOKEN_PRECISION;
     use cosmwasm_std::{Uint128, Uint256};
-    use paloma::asset::native_asset;
-    use paloma::querier::NATIVE_TOKEN_PRECISION;
     use sim::StableSwapModel;
 
     #[test]

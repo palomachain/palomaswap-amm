@@ -25,7 +25,7 @@ async function main() {
     let network = readArtifact(terra.config.chainID)
 
     if (!network.tokenCodeID) {
-        network.tokenCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'paloma_token.wasm')!)
+        network.tokenCodeID = await uploadContract(terra, wallet, join(ARTIFACTS_PATH, 'astroport_token.wasm')!)
         writeArtifact(network, terra.config.chainID)
         console.log(`Token codeId: ${network.tokenCodeID}`)
     }
@@ -54,7 +54,7 @@ async function main() {
         terra,
         wallet,
         wallet.key.accAddress,
-        join(ARTIFACTS_PATH, 'paloma_token.wasm'),
+        join(ARTIFACTS_PATH, 'astroport_token.wasm'),
         msg.initMsg,
         msg.label,
     )

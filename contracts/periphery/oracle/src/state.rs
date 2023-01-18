@@ -1,8 +1,8 @@
 use cosmwasm_schema::cw_serde;
 
+use astroport::asset::{AssetInfo, PairInfo};
 use cosmwasm_std::{Addr, Decimal256, Uint128};
 use cw_storage_plus::Item;
-use paloma::asset::{AssetInfo, PairInfo};
 
 /// Stores the contract config at the given key
 pub const CONFIG: Item<Config> = Item::new("config");

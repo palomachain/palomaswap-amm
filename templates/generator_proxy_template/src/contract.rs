@@ -9,14 +9,14 @@ use cw20::{BalanceResponse, Cw20ExecuteMsg, Cw20QueryMsg, Cw20ReceiveMsg};
 
 use crate::error::ContractError;
 use crate::state::{Config, CONFIG};
-use cw2::set_contract_version;
-use paloma::asset::addr_validate_to_lower;
-use paloma::generator_proxy::{
+use astroport::asset::addr_validate_to_lower;
+use astroport::generator_proxy::{
     CallbackMsg, ConfigResponse, Cw20HookMsg, ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg,
 };
+use cw2::set_contract_version;
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "paloma-generator-proxy-template";
+const CONTRACT_NAME: &str = "astroport-generator-proxy-template";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 

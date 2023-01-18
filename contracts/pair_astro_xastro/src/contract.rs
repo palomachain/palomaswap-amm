@@ -4,17 +4,17 @@ use cosmwasm_std::{
     StdResult, Uint128, WasmMsg,
 };
 
-use paloma::asset::{Asset, AssetInfo};
+use astroport::asset::{Asset, AssetInfo};
 
+use astroport::pair::{ReverseSimulationResponse, SimulationResponse};
+use astroport::pair_bonded::{Config, ExecuteMsg};
+use astroport::querier::{query_supply, query_token_balance};
+use astroport::staking::Cw20HookMsg as StakingCw20HookMsg;
+use astroport_pair_bonded::base::PairBonded;
+use astroport_pair_bonded::error::ContractError;
+use astroport_pair_bonded::state::CONFIG;
 use cw20::Cw20ExecuteMsg;
 use cw_storage_plus::Item;
-use paloma::pair::{ReverseSimulationResponse, SimulationResponse};
-use paloma::pair_bonded::{Config, ExecuteMsg};
-use paloma::querier::{query_supply, query_token_balance};
-use paloma::staking::Cw20HookMsg as StakingCw20HookMsg;
-use paloma_pair_bonded::base::PairBonded;
-use paloma_pair_bonded::error::ContractError;
-use paloma_pair_bonded::state::CONFIG;
 
 /// This structure stores contract params.
 pub(crate) struct Contract<'a> {
@@ -31,7 +31,7 @@ impl<'a> Contract<'a> {
 
 /// Implementation of the bonded pair template. Performs ASTRO-xASTRO swap operations.
 impl<'a> PairBonded<'a> for Contract<'a> {
-    const CONTRACT_NAME: &'a str = "paloma-pair-astro-xastro";
+    const CONTRACT_NAME: &'a str = "astroport-pair-astro-xastro";
 
     fn swap(
         &self,
@@ -120,7 +120,7 @@ impl<'a> PairBonded<'a> for Contract<'a> {
         Ok(Response::new().add_messages(messages))
     }
 
-    /// Simulation swap using Paloma Staking contract.
+    /// Simulation swap using Astroport Staking contract.
     fn query_simulation(
         &self,
         deps: Deps,
@@ -167,7 +167,7 @@ impl<'a> PairBonded<'a> for Contract<'a> {
         })
     }
 
-    /// Reverse simulation swap using Paloma Staking contract.
+    /// Reverse simulation swap using Astroport Staking contract.
     fn query_reverse_simulation(
         &self,
         deps: Deps,

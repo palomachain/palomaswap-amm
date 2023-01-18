@@ -9,11 +9,11 @@ use cw20_base::msg::{ExecuteMsg, QueryMsg};
 use cw20_base::state::{MinterData, TokenInfo, LOGO, MARKETING_INFO, TOKEN_INFO};
 use cw20_base::ContractError;
 
-use paloma::asset::{addr_opt_validate, addr_validate_to_lower};
-use paloma::token::{InstantiateMsg, MigrateMsg};
+use astroport::asset::{addr_opt_validate, addr_validate_to_lower};
+use astroport::token::{InstantiateMsg, MigrateMsg};
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "paloma-token";
+const CONTRACT_NAME: &str = "astroport-token";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 

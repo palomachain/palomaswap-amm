@@ -5,12 +5,12 @@ use cosmwasm_std::{
 };
 use std::collections::HashMap;
 
+use astroport::factory::QueryMsg::{Config, FeeInfo};
+use astroport::factory::{ConfigResponse, FeeInfoResponse};
 use cw20::{BalanceResponse, Cw20QueryMsg, TokenInfoResponse};
-use paloma::factory::QueryMsg::{Config, FeeInfo};
-use paloma::factory::{ConfigResponse, FeeInfoResponse};
 
 /// mock_dependencies is a drop-in replacement for cosmwasm_std::testing::mock_dependencies.
-/// This uses the Paloma CustomQuerier.
+/// This uses the Astroport CustomQuerier.
 pub fn mock_dependencies(
     contract_balance: &[Coin],
 ) -> OwnedDeps<MockStorage, MockApi, WasmMockQuerier> {

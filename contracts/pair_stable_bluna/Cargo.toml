@@ -1,9 +1,9 @@
 [package]
-name = "paloma-pair-stable-bgrain"
+name = "astroport-pair-stable-bluna"
 version = "1.0.2"
-authors = ["Paloma"]
+authors = ["Astroport"]
 edition = "2021"
-description = "The Paloma stableswap pair contract implementation specifically designed for a pair that contains bGRAIN"
+description = "The Astroport stableswap pair contract implementation specifically designed for a pair that contains bLUNA"
 license = "MIT"
 
 exclude = [
@@ -24,7 +24,7 @@ backtraces = ["cosmwasm-std/backtraces"]
 
 [dependencies]
 integer-sqrt = "0.1.5"
-paloma = { path = "../../packages/paloma", default-features = false }
+astroport = { path = "../../packages/astroport", default-features = false }
 cw2 = { version = "0.15" }
 cw20 = { version = "0.15" }
 cosmwasm-std = { version = "1.1" }
@@ -38,7 +38,7 @@ cosmwasm-schema = "1.1"
 [dev-dependencies]
 proptest = "1.0.0"
 sim = { git = "https://github.com/astroport-fi/astroport-sims.git", rev = "d617510737ee2c529d3aaa7afbdac5ccb5a385c9", package = "sim" }
-paloma-token = {path = "../token"}
+astroport-token = {path = "../token"}
 cw-multi-test = "0.15"
-paloma-factory = {path = "../factory"}
-paloma-whitelist = {path = "../whitelist"}
+astroport-factory = {path = "../factory"}
+astroport-whitelist = {path = "../whitelist"}

@@ -1,12 +1,12 @@
-use paloma::asset::AssetInfo;
-use paloma::factory::{InstantiateMsg as FactoryInstantiateMsg, PairConfig, PairType};
-use paloma::pair::{ConfigResponse, InstantiateMsg};
+use astroport::asset::AssetInfo;
+use astroport::factory::{InstantiateMsg as FactoryInstantiateMsg, PairConfig, PairType};
+use astroport::pair::{ConfigResponse, InstantiateMsg};
 
-use paloma::pair_stable_bgrain::{
+use astroport::pair_stable_bluna::{
     ExecuteMsg, QueryMsg, StablePoolConfig, StablePoolParams, StablePoolUpdateParams,
 };
 
-use paloma_pair_stable_bgrain::math::{MAX_AMP, MAX_AMP_CHANGE, MIN_AMP_CHANGING_TIME};
+use astroport_pair_stable_bluna::math::{MAX_AMP, MAX_AMP_CHANGE, MIN_AMP_CHANGING_TIME};
 use cosmwasm_std::{from_binary, to_binary, Addr, Decimal};
 
 use cw_multi_test::{App, ContractWrapper, Executor};
@@ -17,9 +17,9 @@ fn mock_app() -> App {
 
 fn store_token_code(app: &mut App) -> u64 {
     let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_token::contract::execute,
-        paloma_token::contract::instantiate,
-        paloma_token::contract::query,
+        astroport_token::contract::execute,
+        astroport_token::contract::instantiate,
+        astroport_token::contract::query,
     ));
 
     app.store_code(astro_token_contract)
@@ -28,11 +28,11 @@ fn store_token_code(app: &mut App) -> u64 {
 fn store_pair_code(app: &mut App) -> u64 {
     let pair_contract = Box::new(
         ContractWrapper::new_with_empty(
-            paloma_pair_stable_bgrain::contract::execute,
-            paloma_pair_stable_bgrain::contract::instantiate,
-            paloma_pair_stable_bgrain::contract::query,
+            astroport_pair_stable_bluna::contract::execute,
+            astroport_pair_stable_bluna::contract::instantiate,
+            astroport_pair_stable_bluna::contract::query,
         )
-        .with_reply_empty(paloma_pair_stable_bgrain::contract::reply),
+        .with_reply_empty(astroport_pair_stable_bluna::contract::reply),
     );
 
     app.store_code(pair_contract)
@@ -41,11 +41,11 @@ fn store_pair_code(app: &mut App) -> u64 {
 fn store_factory_code(app: &mut App) -> u64 {
     let factory_contract = Box::new(
         ContractWrapper::new_with_empty(
-            paloma_factory::contract::execute,
-            paloma_factory::contract::instantiate,
-            paloma_factory::contract::query,
+            astroport_factory::contract::execute,
+            astroport_factory::contract::instantiate,
+            astroport_factory::contract::query,
         )
-        .with_reply_empty(paloma_factory::contract::reply),
+        .with_reply_empty(astroport_factory::contract::reply),
     );
 
     app.store_code(factory_contract)
@@ -53,9 +53,9 @@ fn store_factory_code(app: &mut App) -> u64 {
 
 fn store_whitelist_code(app: &mut App) -> u64 {
     let whitelist_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_whitelist::contract::execute,
-        paloma_whitelist::contract::instantiate,
-        paloma_whitelist::contract::query,
+        astroport_whitelist::contract::execute,
+        astroport_whitelist::contract::instantiate,
+        astroport_whitelist::contract::query,
     ));
 
     app.store_code(whitelist_contract)
@@ -167,7 +167,7 @@ fn update_pair_config() {
                 denom: "uusd".to_string(),
             },
             AssetInfo::NativeToken {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
             },
         ],
         token_code_id: token_contract_code_id,
@@ -175,7 +175,7 @@ fn update_pair_config() {
         init_params: Some(
             to_binary(&StablePoolParams {
                 amp: 100,
-                bgrain_rewarder: "bgrain_rewarder".to_string(),
+                bluna_rewarder: "bluna_rewarder".to_string(),
                 generator: "generator".to_string(),
             })
             .unwrap(),

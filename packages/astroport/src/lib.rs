@@ -7,7 +7,7 @@ pub mod maker;
 pub mod oracle;
 pub mod pair;
 pub mod pair_bonded;
-pub mod pair_stable_bgrain;
+pub mod pair_stable_bluna;
 pub mod querier;
 pub mod restricted_vector;
 pub mod router;

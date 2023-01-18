@@ -1,8 +1,8 @@
+use astroport::asset::AssetInfo;
+use astroport::common::OwnershipProposal;
 use cosmwasm_schema::cw_serde;
 use cosmwasm_std::{Addr, Decimal, Uint128, Uint64};
 use cw_storage_plus::{Item, Map};
-use paloma::asset::AssetInfo;
-use paloma::common::OwnershipProposal;
 
 /// This structure stores the main paramters for the Maker contract.
 #[cw_serde]

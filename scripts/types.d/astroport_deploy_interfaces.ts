@@ -78,7 +78,7 @@ interface Factory {
 interface Router {
     admin: string,
     initMsg: {
-        paloma_factory: string
+        astroport_factory: string
     },
     label: string
 }

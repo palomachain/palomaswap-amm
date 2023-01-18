@@ -12,7 +12,7 @@ async function main() {
 
     let config = {
         contract_address: "address",
-        file_path: "paloma_contract.wasm",
+        file_path: "astroport_contract.wasm",
         message: {}
     }
 

@@ -1,18 +1,18 @@
 mod factory_helper;
 
 use crate::factory_helper::{instantiate_token, mint, FactoryHelper};
+use astroport::asset::token_asset_info;
+use astroport::factory::PairType;
+use astroport::router::{ExecuteMsg, InstantiateMsg, SwapOperation};
 use cosmwasm_std::{to_binary, Addr, Empty};
 use cw20::Cw20ExecuteMsg;
 use cw_multi_test::{App, Contract, ContractWrapper, Executor};
-use paloma::asset::token_asset_info;
-use paloma::factory::PairType;
-use paloma::router::{ExecuteMsg, InstantiateMsg, SwapOperation};
 
 fn router_contract() -> Box<dyn Contract<Empty>> {
     Box::new(ContractWrapper::new_with_empty(
-        paloma_router::contract::execute,
-        paloma_router::contract::instantiate,
-        paloma_router::contract::query,
+        astroport_router::contract::execute,
+        astroport_router::contract::instantiate,
+        astroport_router::contract::query,
     ))
 }
 
@@ -44,7 +44,7 @@ fn router_does_not_enforce_spread_assertion() {
             router_code,
             owner.clone(),
             &InstantiateMsg {
-                paloma_factory: helper.factory.to_string(),
+                astroport_factory: helper.factory.to_string(),
             },
             &[],
             "router",
@@ -105,7 +105,7 @@ fn router_does_not_enforce_spread_assertion() {
         )
         .unwrap_err();
     assert_eq!(
-        paloma_pair::error::ContractError::MaxSpreadAssertion {},
+        astroport_pair::error::ContractError::MaxSpreadAssertion {},
         err.downcast().unwrap()
     )
 }

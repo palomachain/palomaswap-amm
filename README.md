@@ -1,6 +1,6 @@
 # Palomaswap Core
 
-[![codecov](https://codecov.io/gh/astroport-fi/astroport-core/branch/main/graph/badge.svg?token=ROOLZTGZMM)](https://codecov.io/gh/paloma-fi/paloma-core)
+[![codecov](https://codecov.io/gh/astroport-fi/astroport-core/branch/main/graph/badge.svg?token=ROOLZTGZMM)](https://codecov.io/gh/astroport-fi/astroport-core)
 
 Multi pool type automated market-maker (AMM) protocol powered by smart contracts on the [Paloma](https://www.palomachain.com/) blockchain. This AMM is a fork of the Astroport AMM codebase and aims to integrate and allow cross-AMM trade execution with Astroport at launch.
 
@@ -15,7 +15,7 @@ Multi pool type automated market-maker (AMM) protocol powered by smart contracts
 | [`factory`](contracts/factory)                             | Pool creation factory                        |
 | [`pair`](contracts/pair)                                   | Pair with x*y=k curve                        |
 | [`pair_stable`](contracts/pair_stable)                     | Pair with stableswap invariant curve         |
-| [`pair_stable_bgrain`](contracts/pair_stable_bgrain)         | Pair with stableswap invariant curve handling bGRAIN rewards for LPs |
+| [`pair_stable_bluna`](contracts/pair_stable_bluna)         | Pair with stableswap invariant curve handling bLUNA rewards for LPs |
 | [`token`](contracts/token)                                 | CW20 (ERC20 equivalent) token implementation |
 | [`router`](contracts/router)                               | Multi-hop trade router                       |
 | [`oracle`](contracts/periphery/oracle)                     | TWAP oracles for x*y=k pool types            |
@@ -43,9 +43,9 @@ Go to contract directory and run
 
 ```
 cargo wasm
-cp ../../target/wasm32-unknown-unknown/release/paloma_token.wasm .
-ls -l paloma_token.wasm
-sha256sum paloma_token.wasm
+cp ../../target/wasm32-unknown-unknown/release/astroport_token.wasm .
+ls -l astroport_token.wasm
+sha256sum astroport_token.wasm
 ```
 
 ### You can run tests for all contracts
@@ -66,7 +66,7 @@ The optimized contracts are generated in the artifacts/ directory.
 
 ## Branches
 
-We use [main](https://github.com/astroport-fi/astroport-core/tree/main) branch for new feature development and [release](https://github.com/paloma-fi/paloma-core/tree/release) one for collecting features which are ready for deployment. You can find the version and commit for actually deployed contracts [here](https://github.com/paloma-fi/paloma-changelog).
+We use [main](https://github.com/astroport-fi/astroport-core/tree/main) branch for new feature development and [release](https://github.com/astroport-fi/astroport-core/tree/release) one for collecting features which are ready for deployment. You can find the version and commit for actually deployed contracts [here](https://github.com/astroport-fi/astroport-changelog).
 
 ## Docs
 
@@ -74,4 +74,4 @@ Docs can be generated using `cargo doc --no-deps`
 
 ## Bug Bounty
 
-The contracts in this repo are included in a [bug bounty program](https://www.immunefi.com/bounty/paloma).
+The contracts in this repo are included in a [bug bounty program](https://www.immunefi.com/bounty/astroport).

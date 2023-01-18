@@ -1,7 +1,7 @@
 use cosmwasm_schema::write_api;
 
-use paloma::pair::InstantiateMsg;
-use paloma::pair_bonded::{ExecuteMsg, QueryMsg};
+use astroport::pair::InstantiateMsg;
+use astroport::pair_bonded::{ExecuteMsg, QueryMsg};
 
 fn main() {
     write_api! {

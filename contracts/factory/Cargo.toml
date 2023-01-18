@@ -1,9 +1,9 @@
 [package]
-name = "paloma-factory"
+name = "astroport-factory"
 version = "1.3.0"
-authors = ["Paloma"]
+authors = ["Astroport"]
 edition = "2021"
-description = "Paloma factory contract - pair contract generator and directory"
+description = "Astroport factory contract - pair contract generator and directory"
 license = "MIT"
 
 exclude = [
@@ -24,7 +24,7 @@ backtraces = ["cosmwasm-std/backtraces"]
 
 [dependencies]
 cosmwasm-std = "1.1"
-paloma = { path = "../../packages/paloma", default-features = false }
+astroport = { path = "../../packages/astroport", default-features = false }
 cw-storage-plus = "0.15"
 cw2 = "0.15"
 thiserror = { version = "1.0" }
@@ -34,7 +34,7 @@ cosmwasm-schema = "1.1"
 
 [dev-dependencies]
 cw-multi-test = "0.15"
-paloma-token = {path = "../token"}
-paloma-pair = {path = "../pair"}
+astroport-token = {path = "../token"}
+astroport-pair = {path = "../pair"}
 cw20 = { version = "0.15" }
 anyhow = "1.0"

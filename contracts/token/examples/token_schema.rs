@@ -1,7 +1,7 @@
 use cosmwasm_schema::write_api;
 
+use astroport::token::InstantiateMsg;
 use cw20_base::msg::{ExecuteMsg, QueryMsg};
-use paloma::token::InstantiateMsg;
 
 fn main() {
     write_api! {

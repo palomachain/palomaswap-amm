@@ -13,28 +13,30 @@ use protobuf::Message;
 use crate::error::ContractError;
 use crate::migration;
 
-use paloma::asset::{
+use astroport::asset::{
     addr_opt_validate, addr_validate_to_lower, pair_info_by_pool, token_asset_info, Asset,
     AssetInfo, PairInfo,
 };
 
-use paloma::common::{
+use astroport::common::{
     claim_ownership, drop_ownership_proposal, propose_new_owner, validate_addresses,
 };
-use paloma::factory::{
-    ConfigResponse as FactoryConfigResponse, PairType, QueryMsg as FactoryQueryMsg,
+use astroport::factory::PairType;
+use astroport::generator::{Config, ExecuteOnReply, PoolInfo};
+use astroport::generator::{StakerResponse, UserInfoV2};
+use astroport::querier::query_token_balance;
+use astroport::DecimalCheckedOps;
+use astroport::{
+    factory::{ConfigResponse as FactoryConfigResponse, QueryMsg as FactoryQueryMsg},
+    generator::{
+        Cw20HookMsg, ExecuteMsg, InstantiateMsg, MigrateMsg, PendingTokenResponse,
+        PoolInfoResponse, QueryMsg, RewardInfoResponse,
+    },
+    generator_proxy::{
+        Cw20HookMsg as ProxyCw20HookMsg, ExecuteMsg as ProxyExecuteMsg, QueryMsg as ProxyQueryMsg,
+    },
+    vesting::ExecuteMsg as VestingExecuteMsg,
 };
-use paloma::generator::{
-    Config, Cw20HookMsg, ExecuteMsg, ExecuteOnReply, InstantiateMsg, MigrateMsg,
-    PendingTokenResponse, PoolInfo, PoolInfoResponse, QueryMsg, RewardInfoResponse, StakerResponse,
-    UserInfoV2,
-};
-use paloma::generator_proxy::{
-    Cw20HookMsg as ProxyCw20HookMsg, ExecuteMsg as ProxyExecuteMsg, QueryMsg as ProxyQueryMsg,
-};
-use paloma::querier::query_token_balance;
-use paloma::vesting::ExecuteMsg as VestingExecuteMsg;
-use paloma::DecimalCheckedOps;
 
 use crate::response::MsgInstantiateContractResponse;
 use crate::state::{
@@ -44,7 +46,7 @@ use crate::state::{
 };
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "paloma-generator";
+const CONTRACT_NAME: &str = "astroport-generator";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -460,7 +462,7 @@ fn update_blocked_tokens_list(
         let astro = token_asset_info(cfg.astro_token.clone());
 
         for asset_info in asset_infos {
-            // ASTRO or Terra native assets (UST, GRAIN etc) cannot be blacklisted
+            // ASTRO or Terra native assets (UST, LUNA etc) cannot be blacklisted
             if asset_info.is_native_token() || asset_info.eq(&astro) {
                 return Err(ContractError::AssetCannotBeBlocked {});
             }
@@ -1285,7 +1287,7 @@ pub fn build_claim_pools_asset_reward_messages(
             contract_addr: minter_response.minter,
             funds: vec![],
             msg: to_binary(
-                &paloma::pair_stable_bgrain::ExecuteMsg::ClaimRewardByGenerator {
+                &astroport::pair_stable_bluna::ExecuteMsg::ClaimRewardByGenerator {
                     user: account.to_string(),
                     user_share: user_amount,
                     total_share,
@@ -1435,7 +1437,7 @@ fn send_orphan_proxy_rewards(
         .add_attribute("lp_token", lp_token.to_string()))
 }
 
-/// Return a message object that can help claim bGRAIN rewards for an account.
+/// Return a message object that can help claim bLUNA rewards for an account.
 fn init_proxy_rewards_holder(
     owner: &Addr,
     admin: &Addr,
@@ -2136,7 +2138,7 @@ pub fn migrate(mut deps: DepsMut, env: Env, msg: MigrateMsg) -> Result<Response,
     let contract_version = get_contract_version(deps.storage)?;
 
     match contract_version.contract.as_ref() {
-        "paloma-generator" => match contract_version.version.as_ref() {
+        "astroport-generator" => match contract_version.version.as_ref() {
             "2.0.0" => {
                 migration::migrate_configs_from_v200(&mut deps, &msg)?;
             }

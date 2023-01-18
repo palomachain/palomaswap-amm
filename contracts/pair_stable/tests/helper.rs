@@ -7,14 +7,14 @@ use cw_multi_test::{App, AppResponse, Contract, ContractWrapper, Executor};
 use derivative::Derivative;
 use itertools::Itertools;
 
-use paloma::asset::{native_asset_info, token_asset_info, Asset, AssetInfo, PairInfo};
-use paloma::factory::{PairConfig, PairType};
-use paloma::pair::{
+use astroport::asset::{native_asset_info, token_asset_info, Asset, AssetInfo, PairInfo};
+use astroport::factory::{PairConfig, PairType};
+use astroport::pair::{
     CumulativePricesResponse, Cw20HookMsg, ExecuteMsg, QueryMsg, ReverseSimulationResponse,
     SimulationResponse, StablePoolParams,
 };
-use paloma::querier::NATIVE_TOKEN_PRECISION;
-use paloma_pair_stable::contract::{execute, instantiate, query, reply};
+use astroport::querier::NATIVE_TOKEN_PRECISION;
+use astroport_pair_stable::contract::{execute, instantiate, query, reply};
 
 const INIT_BALANCE: u128 = 1_000_000_000000;
 
@@ -69,9 +69,9 @@ pub fn init_native_coins(test_coins: &[TestCoin]) -> Vec<Coin> {
 
 fn token_contract() -> Box<dyn Contract<Empty>> {
     Box::new(ContractWrapper::new_with_empty(
-        paloma_token::contract::execute,
-        paloma_token::contract::instantiate,
-        paloma_token::contract::query,
+        astroport_token::contract::execute,
+        astroport_token::contract::instantiate,
+        astroport_token::contract::query,
     ))
 }
 
@@ -82,11 +82,11 @@ fn pair_contract() -> Box<dyn Contract<Empty>> {
 fn factory_contract() -> Box<dyn Contract<Empty>> {
     Box::new(
         ContractWrapper::new_with_empty(
-            paloma_factory::contract::execute,
-            paloma_factory::contract::instantiate,
-            paloma_factory::contract::query,
+            astroport_factory::contract::execute,
+            astroport_factory::contract::instantiate,
+            astroport_factory::contract::query,
         )
-        .with_reply_empty(paloma_factory::contract::reply),
+        .with_reply_empty(astroport_factory::contract::reply),
     )
 }
 
@@ -135,7 +135,7 @@ impl Helper {
         let pair_code_id = app.store_code(pair_contract());
         let factory_code_id = app.store_code(factory_contract());
 
-        let init_msg = paloma::factory::InstantiateMsg {
+        let init_msg = astroport::factory::InstantiateMsg {
             fee_address: None,
             pair_configs: vec![PairConfig {
                 code_id: pair_code_id,
@@ -165,7 +165,7 @@ impl Helper {
             .into_iter()
             .map(|(_, asset_info)| asset_info)
             .collect_vec();
-        let init_pair_msg = paloma::factory::ExecuteMsg::CreatePair {
+        let init_pair_msg = astroport::factory::ExecuteMsg::CreatePair {
             pair_type: PairType::Stable {},
             asset_infos: asset_infos.clone(),
             init_params: Some(to_binary(&StablePoolParams { amp, owner: None }).unwrap()),
@@ -173,9 +173,10 @@ impl Helper {
 
         app.execute_contract(owner.clone(), factory.clone(), &init_pair_msg, &[])?;
 
-        let resp: PairInfo = app
-            .wrap()
-            .query_wasm_smart(&factory, &paloma::factory::QueryMsg::Pair { asset_infos })?;
+        let resp: PairInfo = app.wrap().query_wasm_smart(
+            &factory,
+            &astroport::factory::QueryMsg::Pair { asset_infos },
+        )?;
 
         Ok(Self {
             app,
@@ -309,7 +310,7 @@ impl Helper {
         app.instantiate_contract(
             token_code,
             owner.clone(),
-            &paloma::token::InstantiateMsg {
+            &astroport::token::InstantiateMsg {
                 symbol: name.to_string(),
                 name,
                 decimals,

@@ -1,5 +1,5 @@
-use paloma::pair::InstantiateMsg;
-use paloma::pair_bonded::{ExecuteMsg, QueryMsg};
+use astroport::pair::InstantiateMsg;
+use astroport::pair_bonded::{ExecuteMsg, QueryMsg};
 
 use cosmwasm_schema::write_api;
 

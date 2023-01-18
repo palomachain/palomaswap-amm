@@ -1,20 +1,20 @@
-use paloma::asset::{Asset, AssetInfo, PairInfo};
-use paloma::factory::{
+use astroport::asset::{Asset, AssetInfo, PairInfo};
+use astroport::factory::{
     ExecuteMsg as FactoryExecuteMsg, InstantiateMsg as FactoryInstantiateMsg, PairConfig, PairType,
     QueryMsg as FactoryQueryMsg,
 };
-use paloma::pair::{
+use astroport::pair::{
     ConfigResponse, CumulativePricesResponse, Cw20HookMsg, ExecuteMsg, InstantiateMsg, QueryMsg,
     StablePoolConfig, StablePoolParams, StablePoolUpdateParams, TWAP_PRECISION,
 };
 
+use astroport::token::InstantiateMsg as TokenInstantiateMsg;
+use astroport_pair_stable::math::{MAX_AMP, MAX_AMP_CHANGE, MIN_AMP_CHANGING_TIME};
 use cosmwasm_std::{
     attr, from_binary, to_binary, Addr, Coin, Decimal, QueryRequest, Uint128, WasmQuery,
 };
 use cw20::{BalanceResponse, Cw20Coin, Cw20ExecuteMsg, Cw20QueryMsg, MinterResponse};
 use cw_multi_test::{App, ContractWrapper, Executor};
-use paloma::token::InstantiateMsg as TokenInstantiateMsg;
-use paloma_pair_stable::math::{MAX_AMP, MAX_AMP_CHANGE, MIN_AMP_CHANGING_TIME};
 
 const OWNER: &str = "owner";
 
@@ -27,9 +27,9 @@ fn mock_app(owner: Addr, coins: Vec<Coin>) -> App {
 
 fn store_token_code(app: &mut App) -> u64 {
     let astro_token_contract = Box::new(ContractWrapper::new_with_empty(
-        paloma_token::contract::execute,
-        paloma_token::contract::instantiate,
-        paloma_token::contract::query,
+        astroport_token::contract::execute,
+        astroport_token::contract::instantiate,
+        astroport_token::contract::query,
     ));
 
     app.store_code(astro_token_contract)
@@ -38,11 +38,11 @@ fn store_token_code(app: &mut App) -> u64 {
 fn store_pair_code(app: &mut App) -> u64 {
     let pair_contract = Box::new(
         ContractWrapper::new_with_empty(
-            paloma_pair_stable::contract::execute,
-            paloma_pair_stable::contract::instantiate,
-            paloma_pair_stable::contract::query,
+            astroport_pair_stable::contract::execute,
+            astroport_pair_stable::contract::instantiate,
+            astroport_pair_stable::contract::query,
         )
-        .with_reply_empty(paloma_pair_stable::contract::reply),
+        .with_reply_empty(astroport_pair_stable::contract::reply),
     );
 
     app.store_code(pair_contract)
@@ -51,11 +51,11 @@ fn store_pair_code(app: &mut App) -> u64 {
 fn store_factory_code(app: &mut App) -> u64 {
     let factory_contract = Box::new(
         ContractWrapper::new_with_empty(
-            paloma_factory::contract::execute,
-            paloma_factory::contract::instantiate,
-            paloma_factory::contract::query,
+            astroport_factory::contract::execute,
+            astroport_factory::contract::instantiate,
+            astroport_factory::contract::query,
         )
-        .with_reply_empty(paloma_factory::contract::reply),
+        .with_reply_empty(astroport_factory::contract::reply),
     );
 
     app.store_code(factory_contract)
@@ -99,7 +99,7 @@ fn instantiate_pair(mut router: &mut App, owner: &Addr) -> Addr {
                 denom: "uusd".to_string(),
             },
             AssetInfo::NativeToken {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
             },
         ],
         token_code_id: token_contract_code_id,
@@ -128,7 +128,7 @@ fn instantiate_pair(mut router: &mut App, owner: &Addr) -> Addr {
                 denom: "uusd".to_string(),
             },
             AssetInfo::NativeToken {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
             },
         ],
         token_code_id: token_contract_code_id,
@@ -176,7 +176,7 @@ fn test_provide_and_withdraw_liquidity() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -193,7 +193,7 @@ fn test_provide_and_withdraw_liquidity() {
                     amount: Uint128::new(233_000u128),
                 },
                 Coin {
-                    denom: "ugrain".to_string(),
+                    denom: "uluna".to_string(),
                     amount: Uint128::new(200_000u128),
                 },
             ],
@@ -216,7 +216,7 @@ fn test_provide_and_withdraw_liquidity() {
                 denom: "uusd".to_string(),
             },
             AssetInfo::NativeToken {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
             },
         ],
     );
@@ -232,7 +232,7 @@ fn test_provide_and_withdraw_liquidity() {
                     amount: Uint128::new(100_000u128),
                 },
                 Coin {
-                    denom: "ugrain".to_string(),
+                    denom: "uluna".to_string(),
                     amount: Uint128::new(100_000u128),
                 },
             ],
@@ -252,7 +252,7 @@ fn test_provide_and_withdraw_liquidity() {
     assert_eq!(res.events[1].attributes[3], attr("receiver", "alice"),);
     assert_eq!(
         res.events[1].attributes[4],
-        attr("assets", "100uusd, 100ugrain")
+        attr("assets", "100uusd, 100uluna")
     );
     assert_eq!(
         res.events[1].attributes[5],
@@ -290,7 +290,7 @@ fn test_provide_and_withdraw_liquidity() {
     assert_eq!(res.events[1].attributes[3], attr("receiver", "bob"),);
     assert_eq!(
         res.events[1].attributes[4],
-        attr("assets", "100uusd, 100ugrain")
+        attr("assets", "100uusd, 100uluna")
     );
     assert_eq!(
         res.events[1].attributes[5],
@@ -303,7 +303,7 @@ fn test_provide_and_withdraw_liquidity() {
 
 fn provide_liquidity_msg(
     uusd_amount: Uint128,
-    ugrain_amount: Uint128,
+    uluna_amount: Uint128,
     receiver: Option<String>,
 ) -> (ExecuteMsg, [Coin; 2]) {
     let msg = ExecuteMsg::ProvideLiquidity {
@@ -316,9 +316,9 @@ fn provide_liquidity_msg(
             },
             Asset {
                 info: AssetInfo::NativeToken {
-                    denom: "ugrain".to_string(),
+                    denom: "uluna".to_string(),
                 },
-                amount: ugrain_amount.clone(),
+                amount: uluna_amount.clone(),
             },
         ],
         slippage_tolerance: None,
@@ -328,8 +328,8 @@ fn provide_liquidity_msg(
 
     let coins = [
         Coin {
-            denom: "ugrain".to_string(),
-            amount: ugrain_amount.clone(),
+            denom: "uluna".to_string(),
+            amount: uluna_amount.clone(),
         },
         Coin {
             denom: "uusd".to_string(),
@@ -351,7 +351,7 @@ fn provide_lp_for_single_token() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -684,7 +684,7 @@ fn test_compatibility_of_tokens_with_different_precision() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -916,7 +916,7 @@ fn test_if_twap_is_calculated_correctly_when_pool_idles() {
                 amount: Uint128::new(100_000_000_000000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000000u128),
             },
         ],
@@ -934,7 +934,7 @@ fn test_if_twap_is_calculated_correctly_when_pool_idles() {
                 amount: Uint128::new(4666666_000000),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(2000000_000000),
             },
         ],
@@ -990,7 +990,7 @@ fn test_if_twap_is_calculated_correctly_when_pool_idles() {
     let twap0 = cpr_new.cumulative_prices[0].2 - cpr_old.cumulative_prices[0].2;
     let twap1 = cpr_new.cumulative_prices[1].2 - cpr_old.cumulative_prices[1].2;
 
-    // Prices weren't changed for the last day, uusd amount in pool = 4000000_000000, ugrain = 2000000_000000
+    // Prices weren't changed for the last day, uusd amount in pool = 4000000_000000, uluna = 2000000_000000
     let price_precision = Uint128::from(10u128.pow(TWAP_PRECISION.into()));
     assert_eq!(twap0 / price_precision, Uint128::new(85684)); // 1.008356286 * ELAPSED_SECONDS (86400)
     assert_eq!(twap1 / price_precision, Uint128::new(87121)); // 0.991712963 * ELAPSED_SECONDS
@@ -1007,7 +1007,7 @@ fn create_pair_with_same_assets() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -1058,7 +1058,7 @@ fn update_pair_config() {
                 amount: Uint128::new(100_000_000_000u128),
             },
             Coin {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
                 amount: Uint128::new(100_000_000_000u128),
             },
         ],
@@ -1095,7 +1095,7 @@ fn update_pair_config() {
                 denom: "uusd".to_string(),
             },
             AssetInfo::NativeToken {
-                denom: "ugrain".to_string(),
+                denom: "uluna".to_string(),
             },
         ],
         token_code_id: token_contract_code_id,

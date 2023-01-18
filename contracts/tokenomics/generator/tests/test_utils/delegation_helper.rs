@@ -48,7 +48,7 @@ impl DelegationHelper {
                     voting_escrow_addr: escrow_addr.to_string(),
                 },
                 &[],
-                String::from("Paloma Escrow Delegation"),
+                String::from("Astroport Escrow Delegation"),
                 None,
             )
             .unwrap();

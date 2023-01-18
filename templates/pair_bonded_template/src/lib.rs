@@ -4,13 +4,13 @@ pub mod contract;
 pub mod state;
 
 use crate::state::MigrateMsg;
+use astroport::pair::InstantiateMsg;
+use astroport::pair_bonded::{ExecuteMsg, QueryMsg};
+use astroport_pair_bonded::base::PairBonded;
+use astroport_pair_bonded::error::ContractError;
 use cosmwasm_std::{
     entry_point, from_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,
 };
-use paloma::pair::InstantiateMsg;
-use paloma::pair_bonded::{ExecuteMsg, QueryMsg};
-use paloma_pair_bonded::base::PairBonded;
-use paloma_pair_bonded::error::ContractError;
 
 /// Creates a new contract with the specified parameters in [`InstantiateMsg`].
 #[entry_point]

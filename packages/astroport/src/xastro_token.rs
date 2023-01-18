@@ -98,7 +98,7 @@ impl InstantiateMsg {
         }
         if !is_valid_symbol(&self.symbol) {
             return Err(StdError::generic_err(
-                "Ticker symbol is not in expected format [a-zA-Z\\-]{3,13}",
+                "Ticker symbol is not in expected format [a-zA-Z\\-]{3,12}",
             ));
         }
         if self.decimals > 18 {
@@ -120,7 +120,7 @@ fn is_valid_name(name: &str) -> bool {
 /// Checks the validity of a token's symbol.
 fn is_valid_symbol(symbol: &str) -> bool {
     let bytes = symbol.as_bytes();
-    if bytes.len() < 3 || bytes.len() > 13 {
+    if bytes.len() < 3 || bytes.len() > 12 {
         return false;
     }
     for byte in bytes.iter() {

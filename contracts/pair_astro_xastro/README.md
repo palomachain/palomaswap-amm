@@ -1,6 +1,6 @@
-# Paloma ASTRO-xASTRO pair
+# Astroport ASTRO-xASTRO pair
 
-This pool is implementation of pair bonded template. It allows to process ASTRO-xASTRO swap operations via Paloma Staking.
+This pool is implementation of pair bonded template. It allows to process ASTRO-xASTRO swap operations via Astroport Staking.
 
 ---
 
@@ -42,7 +42,7 @@ Init params(should be base64 encoded)
 
 ### `swap`
 
-Perform a swap via Paloma Staking contract.
+Perform a swap via Astroport Staking contract.
 
 ```json
   {
@@ -50,7 +50,7 @@ Perform a swap via Paloma Staking contract.
       "offer_asset": {
         "info": {
           "native_token": {
-            "denom": "ugrain"
+            "denom": "uluna"
           }
         },
         "amount": "123"

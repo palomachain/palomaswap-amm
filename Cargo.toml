@@ -18,7 +18,7 @@ members = [
     "contracts/periphery/*",
 ]
 exclude = [
-    "contracts/pair_stable_bgrain", # TODO: update this when bgrain migrated to cosmwasm 1.0.0
+    "contracts/pair_stable_bluna", # TODO: update this when bluna migrated to cosmwasm 1.0.0
 ]
 
 [profile.release]

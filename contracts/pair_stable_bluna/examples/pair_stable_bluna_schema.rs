@@ -1,5 +1,5 @@
-use paloma::pair::InstantiateMsg;
-use paloma::pair_stable_bgrain::{ExecuteMsg, MigrateMsg, QueryMsg};
+use astroport::pair::InstantiateMsg;
+use astroport::pair_stable_bluna::{ExecuteMsg, MigrateMsg, QueryMsg};
 use cosmwasm_schema::write_api;
 
 fn main() {

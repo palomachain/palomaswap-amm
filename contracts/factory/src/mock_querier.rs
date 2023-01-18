@@ -1,14 +1,14 @@
+use astroport::asset::PairInfo;
+use astroport::pair::QueryMsg;
 use cosmwasm_std::testing::{MockApi, MockQuerier, MockStorage, MOCK_CONTRACT_ADDR};
 use cosmwasm_std::{
     from_binary, from_slice, to_binary, Coin, Empty, OwnedDeps, Querier, QuerierResult,
     QueryRequest, SystemError, SystemResult, WasmQuery,
 };
-use paloma::asset::PairInfo;
-use paloma::pair::QueryMsg;
 use std::collections::HashMap;
 
 /// mock_dependencies is a drop-in replacement for cosmwasm_std::testing::mock_dependencies.
-/// This uses the Paloma CustomQuerier.
+/// This uses the Astroport CustomQuerier.
 pub fn mock_dependencies(
     contract_balance: &[Coin],
 ) -> OwnedDeps<MockStorage, MockApi, WasmMockQuerier> {
@@ -25,17 +25,17 @@ pub fn mock_dependencies(
 
 pub struct WasmMockQuerier {
     base: MockQuerier<Empty>,
-    paloma_pair_querier: PalomaPairQuerier,
+    astroport_pair_querier: AstroportPairQuerier,
 }
 
 #[derive(Clone, Default)]
-pub struct PalomaPairQuerier {
+pub struct AstroportPairQuerier {
     pairs: HashMap<String, PairInfo>,
 }
 
-impl PalomaPairQuerier {
+impl AstroportPairQuerier {
     pub fn new(pairs: &[(&String, &PairInfo)]) -> Self {
-        PalomaPairQuerier {
+        AstroportPairQuerier {
             pairs: pairs_to_map(pairs),
         }
     }
@@ -72,7 +72,7 @@ impl WasmMockQuerier {
                 => match from_binary(&msg).unwrap() {
                     QueryMsg::Pair {} => {
                        let pair_info: PairInfo =
-                        match self.paloma_pair_querier.pairs.get(contract_addr) {
+                        match self.astroport_pair_querier.pairs.get(contract_addr) {
                             Some(v) => v.clone(),
                             None => {
                                 return SystemResult::Err(SystemError::NoSuchContract {
@@ -94,12 +94,12 @@ impl WasmMockQuerier {
     pub fn new(base: MockQuerier<Empty>) -> Self {
         WasmMockQuerier {
             base,
-            paloma_pair_querier: PalomaPairQuerier::default(),
+            astroport_pair_querier: AstroportPairQuerier::default(),
         }
     }
 
-    // Configure the Paloma pair
-    pub fn with_paloma_pairs(&mut self, pairs: &[(&String, &PairInfo)]) {
-        self.paloma_pair_querier = PalomaPairQuerier::new(pairs);
+    // Configure the Astroport pair
+    pub fn with_astroport_pairs(&mut self, pairs: &[(&String, &PairInfo)]) {
+        self.astroport_pair_querier = AstroportPairQuerier::new(pairs);
     }
 }

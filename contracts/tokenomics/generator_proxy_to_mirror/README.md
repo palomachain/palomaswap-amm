@@ -1,4 +1,4 @@
-# Paloma Generator Proxy for Mirror Protocol Staking Rewards
+# Astroport Generator Proxy for Mirror Protocol Staking Rewards
 
 This generator proxy contract interacts with the MIR-UST staking contract. Stake and rewards based on locked LP token amount by liquidity pool providers (dual rewards feature). For a diagram of how dual reward proxies work, you can take a look [here](https://miro.medium.com/max/1400/0*8hn2NSnZJZTa9YGV).
 

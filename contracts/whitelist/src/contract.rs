@@ -2,15 +2,15 @@ use cosmwasm_std::{
     entry_point, Binary, Deps, DepsMut, Empty, Env, MessageInfo, Response, StdResult,
 };
 
+use astroport::common::validate_addresses;
 use cw1_whitelist::contract::{execute as cw1_execute, query as cw1_query};
 use cw1_whitelist::msg::{ExecuteMsg, InstantiateMsg, QueryMsg};
 use cw1_whitelist::state::{AdminList, ADMIN_LIST};
 use cw1_whitelist::ContractError;
 use cw2::set_contract_version;
-use paloma::common::validate_addresses;
 
 // Version info for contract migration.
-const CONTRACT_NAME: &str = "paloma-cw1-whitelist";
+const CONTRACT_NAME: &str = "astroport-cw1-whitelist";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[cfg_attr(not(feature = "library"), entry_point)]

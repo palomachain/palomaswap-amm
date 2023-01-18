@@ -9,9 +9,9 @@ use cw_storage_plus::Item;
 pub struct Config {
     /// The Generator contract address
     pub generator_contract_addr: Addr,
-    /// The target Paloma pair contract address
+    /// The target Astroport pair contract address
     pub pair_addr: Addr,
-    /// The contract address for the Paloma MIR LP token
+    /// The contract address for the Astroport MIR LP token
     pub lp_token_addr: Addr,
     /// The 3rd party reward contract address
     pub reward_contract_addr: Addr,

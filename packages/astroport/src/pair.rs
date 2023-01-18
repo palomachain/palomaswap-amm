@@ -237,7 +237,7 @@ mod tests {
         let inst_msg = LegacyInstantiateMsg {
             asset_infos: [
                 native_asset_info("uusd".to_string()),
-                native_asset_info("ugrain".to_string()),
+                native_asset_info("uluna".to_string()),
             ],
             token_code_id: 0,
             factory_addr: "factory".to_string(),

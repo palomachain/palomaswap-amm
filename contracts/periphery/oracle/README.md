@@ -1,6 +1,6 @@
-# Paloma Oracle
+# Astroport Oracle
 
-This demo oracle contract calculates a 1 day TWAP for a xy=k Paloma pool.
+This demo oracle contract calculates a 1 day TWAP for a xy=k Astroport pool.
 
 ---
 
@@ -51,7 +51,7 @@ Multiplies a token amount (token that's present in the target pool for the TWAP)
   "consult": {
     "token": {
       "native_token": {
-        "denom": "ugrain"
+        "denom": "uluna"
       }
     },
     "amount": "1000000"

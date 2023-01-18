@@ -6,26 +6,26 @@ use crate::utils::{
     build_distribute_msg, build_swap_msg, get_pool, try_build_swap_msg, validate_bridge,
     BRIDGES_EXECUTION_MAX_DEPTH, BRIDGES_INITIAL_DEPTH,
 };
+use astroport::asset::{
+    addr_opt_validate, addr_validate_to_lower, native_asset_info, token_asset, token_asset_info,
+    Asset, AssetInfo, PairInfo, ULUNA_DENOM, UUSD_DENOM,
+};
+use astroport::common::{claim_ownership, drop_ownership_proposal, propose_new_owner};
+use astroport::factory::UpdateAddr;
+use astroport::maker::{
+    AssetWithLimit, BalancesResponse, ConfigResponse, ExecuteMsg, InstantiateMsg, MigrateMsg,
+    QueryMsg,
+};
 use cosmwasm_std::{
     attr, entry_point, to_binary, Addr, Attribute, Binary, CosmosMsg, Decimal, Deps, DepsMut, Env,
     MessageInfo, Order, Response, StdError, StdResult, SubMsg, Uint128, Uint64, WasmMsg,
 };
 use cw2::{get_contract_version, set_contract_version};
 use cw20::Cw20ExecuteMsg;
-use paloma::asset::{
-    addr_opt_validate, addr_validate_to_lower, native_asset_info, token_asset, token_asset_info,
-    Asset, AssetInfo, PairInfo, UGRAIN_DENOM, UUSD_DENOM,
-};
-use paloma::common::{claim_ownership, drop_ownership_proposal, propose_new_owner};
-use paloma::factory::UpdateAddr;
-use paloma::maker::{
-    AssetWithLimit, BalancesResponse, ConfigResponse, ExecuteMsg, InstantiateMsg, MigrateMsg,
-    QueryMsg,
-};
 use std::collections::{HashMap, HashSet};
 
 /// Contract name that is used for migration.
-const CONTRACT_NAME: &str = "paloma-maker";
+const CONTRACT_NAME: &str = "astroport-maker";
 /// Contract version that is used for migration.
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 /// Sets the default maximum spread (as a percentage) used when swapping fee tokens to ASTRO.
@@ -272,11 +272,11 @@ fn swap_assets(
     // For default bridges we always need these two pools, hence the check
     let astro = token_asset_info(cfg.astro_token_contract.clone());
     let uusd = native_asset_info(UUSD_DENOM.to_string());
-    let ugrain = native_asset_info(UGRAIN_DENOM.to_string());
+    let uluna = native_asset_info(ULUNA_DENOM.to_string());
 
-    // Check the uusd - ASTRO pool and the ugrain - uusd pool
+    // Check the uusd - ASTRO pool and the uluna - uusd pool
     get_pool(&deps.querier, &cfg.factory_contract, &uusd, &astro, None)?;
-    get_pool(&deps.querier, &cfg.factory_contract, &ugrain, &uusd, None)?;
+    get_pool(&deps.querier, &cfg.factory_contract, &uluna, &uusd, None)?;
 
     for a in assets {
         // Get balance
@@ -322,7 +322,7 @@ fn swap(
 ) -> Result<SwapTarget, ContractError> {
     let astro = token_asset_info(cfg.astro_token_contract.clone());
     let uusd = native_asset_info(UUSD_DENOM.to_string());
-    let ugrain = native_asset_info(UGRAIN_DENOM.to_string());
+    let uluna = native_asset_info(ULUNA_DENOM.to_string());
 
     // 1. If from_token is UST, only swap to ASTRO is possible
     if from_token.eq(&uusd) {
@@ -365,12 +365,11 @@ fn swap(
         }
     }
 
-    // 4. Check for a pair with GRAIN
-    if from_token.ne(&uusd) && from_token.ne(&ugrain) {
-        let swap_to_ugrain =
-            try_build_swap_msg(&deps.querier, cfg, &from_token, &ugrain, amount_in);
-        if let Ok(msg) = swap_to_ugrain {
-            return Ok(SwapTarget::Bridge { asset: ugrain, msg });
+    // 4. Check for a pair with LUNA
+    if from_token.ne(&uusd) && from_token.ne(&uluna) {
+        let swap_to_uluna = try_build_swap_msg(&deps.querier, cfg, &from_token, &uluna, amount_in);
+        if let Ok(msg) = swap_to_uluna {
+            return Ok(SwapTarget::Bridge { asset: uluna, msg });
         }
     }
 
@@ -397,10 +396,10 @@ fn swap_no_validate(
 ) -> Result<SwapTarget, ContractError> {
     let astro = token_asset_info(cfg.astro_token_contract.clone());
     let uusd = native_asset_info(UUSD_DENOM.to_string());
-    let ugrain = native_asset_info(UGRAIN_DENOM.to_string());
+    let uluna = native_asset_info(ULUNA_DENOM.to_string());
 
-    // GRAIN should be swapped to UST
-    if from_token.eq(&ugrain) {
+    // LUNA should be swapped to UST
+    if from_token.eq(&uluna) {
         let msg = try_build_swap_msg(&deps.querier, cfg, &from_token, &uusd, amount_in)?;
         return Ok(SwapTarget::Bridge { asset: uusd, msg });
     }
@@ -799,11 +798,11 @@ fn query_bridges(deps: Deps) -> StdResult<Vec<(String, String)>> {
 
 /// Returns asset information for the specified pair.
 ///
-/// * **contract_addr** Paloma pair contract address.
+/// * **contract_addr** Astroport pair contract address.
 pub fn query_pair(deps: Deps, contract_addr: Addr) -> StdResult<Vec<AssetInfo>> {
     let res: PairInfo = deps
         .querier
-        .query_wasm_smart(contract_addr, &paloma::pair::QueryMsg::Pair {})?;
+        .query_wasm_smart(contract_addr, &astroport::pair::QueryMsg::Pair {})?;
 
     Ok(res.asset_infos)
 }
@@ -814,7 +813,7 @@ pub fn migrate(deps: DepsMut, _env: Env, _msg: MigrateMsg) -> Result<Response, C
     let contract_version = get_contract_version(deps.storage)?;
 
     match contract_version.contract.as_ref() {
-        "paloma-maker" => match contract_version.version.as_ref() {
+        "astroport-maker" => match contract_version.version.as_ref() {
             "1.0.0" | "1.0.1" => {}
             _ => return Err(ContractError::MigrationError {}),
         },
