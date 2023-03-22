@@ -1,4 +1,4 @@
-# Palomaswap Core
+# PalomaDex Core
 
 [![codecov](https://codecov.io/gh/astroport-fi/astroport-core/branch/main/graph/badge.svg?token=ROOLZTGZMM)](https://codecov.io/gh/astroport-fi/astroport-core)
 
